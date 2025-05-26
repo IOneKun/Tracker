@@ -14,7 +14,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
         
         window = UIWindow()
-        window?.rootViewController = ViewController()
+        window?.rootViewController = SplashViewController()
         window?.makeKeyAndVisible()
         
         return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
