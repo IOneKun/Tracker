@@ -4,11 +4,16 @@ protocol CreateTrackerViewControllerDelegate: AnyObject {
     func didCreateTracker(_ tracker: Tracker)
 }
 
-final class CreateTrackerViewController: UIViewController, ScheduleViewControllerDelegate {
+final class CreateTrackerViewController: UIViewController, ScheduleViewControllerDelegate, CategoryViewControllerDelegate {
+    func didSelectCategory(_ category: String) {
+        print("Category was chosen: \(category)")
+    }
+    
     
     func didSelectDays(_ days: [Weekday]) {
         self.selectedSchedule = days
         updateScheduleOptionText()
+        optionsTableView.reloadData()
     }
     
     weak var delegate: CreateTrackerViewControllerDelegate?
@@ -95,7 +100,7 @@ final class CreateTrackerViewController: UIViewController, ScheduleViewControlle
         view.backgroundColor = .white
         title = "Новая привычка"
         setupLayout()
-        buttonsView.createButton.addTarget(self, action: #selector(createTrackerTapped), for: .touchUpInside)
+        buttonsView.createButton.addTarget(self, action: #selector(createTrackerButtonTapped), for: .touchUpInside)
     }
     
     private func setupLayout() {
@@ -134,7 +139,7 @@ final class CreateTrackerViewController: UIViewController, ScheduleViewControlle
             colorCollectionView.heightAnchor.constraint(equalToConstant: 220),
         ])
     }
-    @objc private func createTrackerTapped() {
+    @objc private func createTrackerButtonTapped() {
         guard let title = textFieldView.text, !title.isEmpty else {
             showAlert(message: "Введите название трекера")
             return
@@ -157,10 +162,10 @@ final class CreateTrackerViewController: UIViewController, ScheduleViewControlle
             color: colors[colorIndex.item],
             schedule: []
         )
-        
         delegate?.didCreateTracker(tracker)
         dismiss(animated: true)
     }
+    
     private func showAlert(message: String) {
         let alert = UIAlertController(title: nil, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Ок", style: .default))
@@ -201,6 +206,8 @@ extension CreateTrackerViewController: UITableViewDelegate, UITableViewDataSourc
         if option == .schedule && !selectedSchedule.isEmpty {
             let daysText = selectedSchedule.map { $0.shortName }.joined(separator: ", ")
             cell.setDetailText(daysText)
+        } else {
+            cell.setDetailText("")
         }
         return cell
     }
@@ -216,7 +223,8 @@ extension CreateTrackerViewController: UITableViewDelegate, UITableViewDataSourc
             present(nav, animated: true)
             
         case .category:
-            let categoryVC = CategoryViewControler()
+            let categoryVC = CategoryViewController()
+            categoryVC.delegate = self
             let nav2 = UINavigationController(rootViewController: categoryVC)
             present(nav2, animated: true)
         }

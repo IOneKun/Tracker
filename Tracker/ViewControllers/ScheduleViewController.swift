@@ -6,11 +6,11 @@ protocol ScheduleViewControllerDelegate: AnyObject {
 }
 
 final class ScheduleViewController: UIViewController {
-
+    
     weak var delegate: ScheduleViewControllerDelegate?
-
+    
     private var selectedDays: Set<Weekday> = []
-
+    
     private let tableView: UITableView = {
         let tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -22,7 +22,7 @@ final class ScheduleViewController: UIViewController {
         tableView.isScrollEnabled = false
         return tableView
     }()
-
+    
     private let doneButton: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -33,7 +33,7 @@ final class ScheduleViewController: UIViewController {
         button.layer.cornerRadius = 16
         return button
     }()
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Расписание"
@@ -42,43 +42,46 @@ final class ScheduleViewController: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
         doneButton.addTarget(self, action: #selector(doneTapped), for: .touchUpInside)
+        tableView.tableFooterView = UIView()
+        tableView.tableHeaderView = UIView()
     }
-
+    
     private func setupLayout() {
         view.addSubview(tableView)
         view.addSubview(doneButton)
-
+        
         NSLayoutConstraint.activate([
             tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            tableView.bottomAnchor.constraint(equalTo: doneButton.topAnchor, constant: -24),
-
+            tableView.heightAnchor.constraint(equalToConstant: 525),
+            
+            
             doneButton.heightAnchor.constraint(equalToConstant: 60),
             doneButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             doneButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             doneButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16)
         ])
     }
-
+    
     @objc private func doneTapped() {
-        print("Нажата кнопка Готово") 
+        print("Нажата кнопка Готово")
         delegate?.didSelectDays(Array(selectedDays.sorted(by: { $0.rawValue < $1.rawValue })))
         dismiss(animated: true)
     }
 }
 
 extension ScheduleViewController: UITableViewDataSource, UITableViewDelegate {
-
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return Weekday.allCases.count
     }
-
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: ScheduleSwitchCell.identifier, for: indexPath) as? ScheduleSwitchCell else {
             return UITableViewCell()
         }
-
+        
         let day = Weekday.allCases[indexPath.row]
         cell.configure(with: day, isOn: selectedDays.contains(day))
         cell.switchChanged = { [weak self] isOn in
@@ -89,10 +92,10 @@ extension ScheduleViewController: UITableViewDataSource, UITableViewDelegate {
                 self.selectedDays.remove(day)
             }
         }
-
+        
         return cell
     }
-
+    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 75
     }

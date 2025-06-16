@@ -10,7 +10,7 @@ struct Tracker {
 }
 
 enum Weekday: Int, CaseIterable {
-    case monday = 1
+    case monday 
     case tuesday
     case wednesday
     case thursday

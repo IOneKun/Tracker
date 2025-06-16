@@ -4,31 +4,31 @@ import UIKit
 final class TrackerOptionCell: UITableViewCell {
     static let reuseIdentifier = "TrackerOptionCell"
     
-    private let titleLabel = UILabel()
-    private let valueLabel = UILabel()
+    private let optionNameLabel = UILabel()
+    private let selectedValueLabel = UILabel()
     private let chevronImageView = UIImageView(image: UIImage(systemName: "chevron.right"))
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         configureUI()
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     private func configureUI() {
         backgroundColor = .grayDay
         
-        titleLabel.font = UIFont.systemFont(ofSize: 17)
-        valueLabel.font = UIFont.systemFont(ofSize: 15)
-        valueLabel.textColor = .gray
-        valueLabel.numberOfLines = 1
+        optionNameLabel.font = UIFont.systemFont(ofSize: 17)
+        selectedValueLabel.font = UIFont.systemFont(ofSize: 15)
+        selectedValueLabel.textColor = .gray
+        selectedValueLabel.numberOfLines = 1
         
         chevronImageView.tintColor = .grayDay2
         chevronImageView.setContentHuggingPriority(.required, for: .horizontal)
-
-        let labelsStack = UIStackView(arrangedSubviews: [titleLabel, valueLabel])
+        
+        let labelsStack = UIStackView(arrangedSubviews: [optionNameLabel, selectedValueLabel])
         labelsStack.axis = .vertical
         labelsStack.spacing = 2
         
@@ -47,14 +47,13 @@ final class TrackerOptionCell: UITableViewCell {
             mainStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12)
         ])
     }
-
+    
     func configure(with type: TrackerOptionType) {
-        titleLabel.text = type.title
-        valueLabel.text = type.value
+        optionNameLabel.text = type.title
     }
-
+    
     func setDetailText(_ text: String) {
-        valueLabel.text = text
+        selectedValueLabel.text = text
     }
 }
 

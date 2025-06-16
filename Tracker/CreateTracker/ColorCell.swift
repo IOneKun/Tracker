@@ -29,15 +29,15 @@ final class ColorCell: UICollectionViewCell {
         contentView.layer.addSublayer(selectedBorderLayer)
     }
     override func layoutSubviews() {
-            super.layoutSubviews()
-            let size: CGFloat = 52
-            selectedBorderLayer.frame = CGRect(
-                x: (contentView.bounds.width - size) / 2,
-                y: (contentView.bounds.height - size) / 2,
-                width: size,
-                height: size
-            )
-        }
+        super.layoutSubviews()
+        let size: CGFloat = 52
+        selectedBorderLayer.frame = CGRect(
+            x: (contentView.bounds.width - size) / 2,
+            y: (contentView.bounds.height - size) / 2,
+            width: size,
+            height: size
+        )
+    }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")

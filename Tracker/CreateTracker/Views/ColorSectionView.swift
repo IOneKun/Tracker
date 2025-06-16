@@ -1,4 +1,4 @@
-    import Foundation
+   /* import Foundation
 
     import UIKit
 
@@ -88,4 +88,4 @@
             selectedColor = colors[indexPath.item]
             onColorSelected?(selectedColor!)
         }
-    }
+    }*/
