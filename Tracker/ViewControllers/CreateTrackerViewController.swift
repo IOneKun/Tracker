@@ -159,6 +159,7 @@ final class CreateTrackerViewController: UIViewController, ScheduleViewControlle
             colorCollectionView.heightAnchor.constraint(equalToConstant: 220),
         ])
     }
+    
     @objc private func createTrackerButtonTapped() {
         guard let title = textFieldView.text, !title.isEmpty else {
             showAlert(message: "Введите название трекера")
@@ -187,7 +188,7 @@ final class CreateTrackerViewController: UIViewController, ScheduleViewControlle
             return
         }
         delegate?.didCreateTracker(tracker, in: selectedCategory)
-        dismiss(animated: true)
+        presentingViewController?.presentingViewController?.dismiss(animated: true)
     }
     
     
