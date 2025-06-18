@@ -15,7 +15,8 @@ final class CreateCategoryViewController: UIViewController {
         button.setTitle("Готово", for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
         button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = .blackDay
+        button.isEnabled = false 
+        button.backgroundColor = .gray
         button.layer.cornerRadius = 16
         return button
     }()
@@ -37,6 +38,8 @@ final class CreateCategoryViewController: UIViewController {
         view.backgroundColor = .white
         doneButton.addTarget(self, action: #selector(doneCategoryButtonTapped), for: .touchUpInside)
         setupLayout()
+        textField.addTarget(self, action: #selector(textFieldChanged), for: .editingChanged)
+        updateDoneButtonState()
     }
     
     func setupLayout() {
@@ -62,6 +65,14 @@ final class CreateCategoryViewController: UIViewController {
         }
         delegate?.didCreateCategory(categoryName)
         dismiss(animated: true)
+    }
+    @objc private func textFieldChanged() {
+        updateDoneButtonState()
+    }
+    private func updateDoneButtonState() {
+        let hasText = !(textField.text?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
+        doneButton.isEnabled = hasText
+        doneButton.backgroundColor = hasText ? .blackDay : .gray
     }
 }
 

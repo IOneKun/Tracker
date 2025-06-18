@@ -2,12 +2,18 @@ import Foundation
 import UIKit
 
 final class TrackersViewController: UIViewController, CreateTrackerViewControllerDelegate {
-    func didCreateTracker(_ tracker: Tracker) {
-        trackers.append(tracker)
+    
+    func didCreateTracker(_ tracker: Tracker, in category: String) {
+        if let index = trackerCategories.firstIndex(where: { $0.name == category }) {
+            trackerCategories[index].trackers.append(tracker)
+        } else {
+            trackerCategories.append(TrackerCategory(name: category, trackers: [tracker]))
+        }
+
         collectionView.reloadData()
+        updatePlaceholderVisibility()
     }
     
-    var trackers: [Tracker] = []
     var trackerCategories: [TrackerCategory] = []
     var completedTrackers: [TrackerRecord] = []
     
@@ -49,22 +55,14 @@ final class TrackersViewController: UIViewController, CreateTrackerViewControlle
         setupNavBarLabelAndSearchBar()
         setupImageAndLabelOnTrackerVC()
         setupCollectionView()
-        setupMockData()
         collectionView.dataSource = self
         collectionView.delegate = self
     }
-    //ВРЕМЕННО
-    private func setupMockData() {
-        // временные данные для теста
-        let sampleTracker = Tracker(
-            id: UUID(),
-            name: "Читать книгу",
-            emoji: "G",
-            color: .yellow,
-            schedule: [.monday, .wednesday, .friday]
-        )
-        let sampleCategory = TrackerCategory(name: "Полезные привычки", trackers: [sampleTracker])
-        trackerCategories = [sampleCategory]
+    
+    private func updatePlaceholderVisibility() {
+        let hasTrackers = trackerCategories.contains { !$0.trackers.isEmpty }
+        imageView.isHidden = hasTrackers
+        emptyLabel.isHidden = hasTrackers
     }
     
     func setupNavBarLabelAndSearchBar() {
@@ -152,6 +150,7 @@ final class TrackersViewController: UIViewController, CreateTrackerViewControlle
     
     @objc func addTrackerButtonTapped() {
         let trackerTypeVC = TrackerTypeViewController()
+        trackerTypeVC.delegate = self
         let navController = UINavigationController(rootViewController: trackerTypeVC)
         navController.modalPresentationStyle = .pageSheet
         present(navController, animated: true)

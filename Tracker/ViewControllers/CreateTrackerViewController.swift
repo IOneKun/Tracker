@@ -1,28 +1,45 @@
 import UIKit
 
 protocol CreateTrackerViewControllerDelegate: AnyObject {
-    func didCreateTracker(_ tracker: Tracker)
+    func didCreateTracker(_ tracker: Tracker, in category: String)
 }
 
 final class CreateTrackerViewController: UIViewController, ScheduleViewControllerDelegate, CategoryViewControllerDelegate {
+    
     func didSelectCategory(_ category: String) {
+        selectedCategory = category
+        optionsTableView.reloadData()
+        updateCreateButtonState()
+        
         print("Category was chosen: \(category)")
     }
-    
     
     func didSelectDays(_ days: [Weekday]) {
         self.selectedSchedule = days
         updateScheduleOptionText()
+        updateCreateButtonState()
         optionsTableView.reloadData()
     }
     
     weak var delegate: CreateTrackerViewControllerDelegate?
     
+    var trackerType: TrackerType = .habit
+    private var selectedCategory: String?
     private var selectedSchedule: [Weekday] = []
     private var categories: [TrackerCategory] = []
     private let textFieldView = TrackerTextFieldView()
     private let buttonsView = ActionButtonsView()
-    private let options: [TrackerOptionType] = TrackerOptionType.allCases
+    private var options: [TrackerOptionType] {
+        switch trackerType {
+        case .habit:
+            return [.category, .schedule]
+        case .irregularEvent:
+            return [.category]
+        }
+    }
+    private var selectedEmojiIndex: IndexPath?
+    private var selectedColorIndex: IndexPath?
+    
     private lazy var optionsTableView: UITableView = {
         let table = UITableView()
         table.translatesAutoresizingMaskIntoConstraints = false
@@ -36,17 +53,15 @@ final class CreateTrackerViewController: UIViewController, ScheduleViewControlle
         table.layer.cornerRadius = 16
         return table
     }()
-    private let emojis = ["🙂", "😻", "🌺", "🐶", "❤️", "😱", "😇", "😡", "🥶", "🤔", "🙌", "🍔", "🥦", "🏓", "🥇", "🎸", "🏝️", "😪"]
-    private let colors: [UIColor] = [.color1, .color2, .color3, .color4, .color5, .color6, .color7, .color8, .color9, .color10, .color11, .color12, .color13, .color14, .color15, .color16, .color17, .color18]
-    private var selectedEmojiIndex: IndexPath?
-    private var selectedColorIndex: IndexPath?
+    
     private lazy var emojiLabel: UILabel = {
         let label = UILabel()
         label.text = "Emoji"
         label.font = .systemFont(ofSize: 19, weight: .bold)
         return label
     }()
-    private lazy var emojiCollectionView: UICollectionView = {
+    
+    public lazy var emojiCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.minimumLineSpacing = 5
         layout.minimumInteritemSpacing = 5
@@ -60,6 +75,7 @@ final class CreateTrackerViewController: UIViewController, ScheduleViewControlle
         collectionView.register(EmojiCell.self, forCellWithReuseIdentifier: EmojiCell.reuseId)
         return collectionView
     }()
+    
     private lazy var colorLabel: UILabel = {
         let label = UILabel()
         label.text = "Цвет"
@@ -81,6 +97,7 @@ final class CreateTrackerViewController: UIViewController, ScheduleViewControlle
         collectionView.register(ColorCell.self, forCellWithReuseIdentifier: ColorCell.reuseId)
         return collectionView
     }()
+    
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -101,6 +118,9 @@ final class CreateTrackerViewController: UIViewController, ScheduleViewControlle
         title = "Новая привычка"
         setupLayout()
         buttonsView.createButton.addTarget(self, action: #selector(createTrackerButtonTapped), for: .touchUpInside)
+        buttonsView.cancelButton.addTarget(self, action:
+                                            #selector(cancelButtonTapped), for: .touchUpInside)
+        textFieldView.textField.addTarget(self, action: #selector(titleTextFieldChanged), for: .editingChanged)
     }
     
     private func setupLayout() {
@@ -160,11 +180,38 @@ final class CreateTrackerViewController: UIViewController, ScheduleViewControlle
             name: title,
             emoji: emojis[emojiIndex.item],
             color: colors[colorIndex.item],
-            schedule: []
+            schedule: selectedSchedule
         )
-        delegate?.didCreateTracker(tracker)
+        guard let selectedCategory = selectedCategory else {
+            showAlert(message: "Выберите категорию")
+            return
+        }
+        delegate?.didCreateTracker(tracker, in: selectedCategory)
         dismiss(animated: true)
     }
+    
+    
+    @objc private func cancelButtonTapped() {
+        presentingViewController?.presentingViewController?.dismiss(animated: true)
+    }
+    
+    private func updateCreateButtonState() {
+        let isTitleEntered = !(textFieldView.text ?? "").isEmpty
+        let isCategorySelected = selectedCategory != nil
+        let isScheduleValid = trackerType == .habit ? !selectedSchedule.isEmpty : true
+        let isEmojiChosen = selectedEmojiIndex != nil
+        let isColorChosen = selectedColorIndex != nil
+
+        let isFormValid = isTitleEntered && isCategorySelected && isScheduleValid && isColorChosen && isEmojiChosen
+
+        buttonsView.createButton.isEnabled = isFormValid
+        buttonsView.createButton.backgroundColor = isFormValid ? .blackDay : .gray
+    }
+    
+    @objc private func titleTextFieldChanged() {
+        updateCreateButtonState()
+    }
+
     
     private func showAlert(message: String) {
         let alert = UIAlertController(title: nil, message: message, preferredStyle: .alert)
@@ -203,14 +250,25 @@ extension CreateTrackerViewController: UITableViewDelegate, UITableViewDataSourc
         let option = options[indexPath.row]
         cell.configure(with: option)
         
-        if option == .schedule && !selectedSchedule.isEmpty {
-            let daysText = selectedSchedule.map { $0.shortName }.joined(separator: ", ")
-            cell.setDetailText(daysText)
-        } else {
-            cell.setDetailText("")
+        switch option {
+        case .schedule:
+            if !selectedSchedule.isEmpty {
+                let daysText = selectedSchedule.map { $0.shortName }.joined(separator: ", ")
+                cell.setDetailText(daysText)
+            } else {
+                cell.setDetailText("")
+            }
+            
+        case .category:
+            if let selectedCategory = selectedCategory, !selectedCategory.isEmpty {
+                cell.setDetailText(selectedCategory)
+            } else {
+                cell.setDetailText("")
+            }
         }
         return cell
     }
+
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         let selectionOption = options[indexPath.row]
