@@ -2,6 +2,7 @@ import Foundation
 import UIKit
 
 final class TrackerTextFieldView: UIView {
+    //MARK: - UI Elements
     let textField: UITextField = {
         let textField = UITextField()
         textField.placeholder = "Введите название трекера"
@@ -18,7 +19,7 @@ final class TrackerTextFieldView: UIView {
     var text: String? {
         return textField.text
     }
-    
+    //MARK: - Init
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupLayout()
@@ -27,7 +28,7 @@ final class TrackerTextFieldView: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+    //MARK: - Function 
     private func setupLayout() {
         addSubview(textField)
         textField.translatesAutoresizingMaskIntoConstraints = false

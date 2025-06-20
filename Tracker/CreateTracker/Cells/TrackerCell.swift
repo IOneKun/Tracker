@@ -1,7 +1,11 @@
 import UIKit
 
+protocol TrackerCellDelegate: AnyObject {
+    func trackerCellDidTapComplete(_ cell: TrackerCell)
+}
 final class TrackerCell: UICollectionViewCell {
     
+    weak var delegate: TrackerCellDelegate?
     static let identifier = "TrackerCell"
     
     // MARK: - UI Elements
@@ -47,9 +51,7 @@ final class TrackerCell: UICollectionViewCell {
     
     let plusButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setImage(UIImage(systemName: "plus"), for: .normal)
-        button.tintColor = .white
-        button.backgroundColor = .black
+        button.setImage(UIImage(named: "plus_button"), for: .normal)
         button.layer.cornerRadius = 17
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -62,6 +64,7 @@ final class TrackerCell: UICollectionViewCell {
         contentView.layer.cornerRadius = 16
         contentView.layer.masksToBounds = true
         setupLayout()
+        plusButton.addTarget(self, action: #selector(plusButtonTapped), for: .touchUpInside)
     }
     
     required init?(coder: NSCoder) {
@@ -70,11 +73,30 @@ final class TrackerCell: UICollectionViewCell {
     
     // MARK: - Public Configure
     
-    func configure(with tracker: Tracker, completedDays: Int) {
+    @objc private func plusButtonTapped() {
+        delegate?.trackerCellDidTapComplete(self)
+    }
+    
+    func configure(with tracker: Tracker, completedDays: Int, isCompleted: Bool) {
         emojiLabel.text = tracker.emoji
         titleLabel.text = tracker.name
-        daysLabel.text = "\(completedDays) дней"
+        if completedDays % 100 >= 11 && completedDays % 100 <= 14 {
+            daysLabel.text = "\(completedDays) дней"
+        } else {
+            switch completedDays % 10 {
+            case 1:
+                daysLabel.text = "\(completedDays) день"
+            case 2, 3, 4:
+                daysLabel.text = "\(completedDays) дня"
+            default:
+                daysLabel.text = "\(completedDays) дней"
+            }
+        }
         coloredBackgroundView.backgroundColor = tracker.color
+        
+        let buttonImageName = isCompleted ? "done_button" : "plus_button"
+        plusButton.setImage(UIImage(named: buttonImageName), for: .normal)
+        plusButton.tintColor = tracker.color
     }
     
     // MARK: - Layout

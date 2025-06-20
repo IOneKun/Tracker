@@ -1,7 +1,7 @@
 import UIKit
 
 final class ScheduleSwitchCell: UITableViewCell {
-    
+    //MARK: - UI Elements
     static let identifier = "ScheduleSwitchCell"
     
     private let titleLabel: UILabel = {
@@ -21,6 +21,7 @@ final class ScheduleSwitchCell: UITableViewCell {
     
     var switchChanged: ((Bool) -> Void)?
     
+    //MARK: - Init
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         backgroundColor = .grayDay
@@ -43,6 +44,7 @@ final class ScheduleSwitchCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    //MARK: - Functions
     func configure(with day: Weekday, isOn: Bool) {
         titleLabel.text = day.displayName
         toggleSwitch.isOn = isOn

@@ -5,6 +5,7 @@ protocol CategoryViewControllerDelegate: AnyObject {
 }
 
 final class CategoryViewController: UIViewController {
+    //MARK: - UI Elements
     
     weak var delegate: CategoryViewControllerDelegate?
     
@@ -75,38 +76,40 @@ final class CategoryViewController: UIViewController {
     // MARK: - Layout
     
     private func setupLayout() {
-           scrollView.translatesAutoresizingMaskIntoConstraints = false
-           stackView.translatesAutoresizingMaskIntoConstraints = false
-           stackView.axis = .vertical
-           stackView.spacing = 16
-           
-           view.addSubview(scrollView)
-           view.addSubview(addButton)
-           scrollView.addSubview(stackView)
-           
-           stackView.addArrangedSubview(tableView)
-           
-           NSLayoutConstraint.activate([
-               scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-               scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-               scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-               scrollView.bottomAnchor.constraint(equalTo: addButton.topAnchor, constant: -16),
-               
-               stackView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor, constant: 16),
-               stackView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor, constant: 16),
-               stackView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor, constant: -16),
-               stackView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
-               stackView.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -32),
-               
-               addButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-               addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-               addButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
-               addButton.heightAnchor.constraint(equalToConstant: 60)
-           ])
-           
-           tableViewHeightConstraint = tableView.heightAnchor.constraint(equalToConstant: CGFloat(categories.count * 75))
-           tableViewHeightConstraint?.isActive = true
-       }
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.axis = .vertical
+        stackView.spacing = 16
+        
+        view.addSubview(scrollView)
+        view.addSubview(addButton)
+        scrollView.addSubview(stackView)
+        
+        stackView.addArrangedSubview(tableView)
+        
+        NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: addButton.topAnchor, constant: -16),
+            
+            stackView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor, constant: 16),
+            stackView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor, constant: 16),
+            stackView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor, constant: -16),
+            stackView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
+            stackView.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -32),
+            
+            addButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            addButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
+            addButton.heightAnchor.constraint(equalToConstant: 60)
+        ])
+        
+        tableViewHeightConstraint = tableView.heightAnchor.constraint(equalToConstant: CGFloat(categories.count * 75))
+        tableViewHeightConstraint?.isActive = true
+    }
+    
+    //MARK: - Function
     
     private func updateUI() {
         let shouldHideEmptyState = !categories.isEmpty
@@ -159,10 +162,10 @@ extension CategoryViewController: UITableViewDataSource, UITableViewDelegate {
 
 extension CategoryViewController: CreateCategoryViewControllerDelegate {
     func didCreateCategory(_ category: String) {
-      
+        
         categories.append(category)
         let newHeight = CGFloat(categories.count * 75)
-          tableViewHeightConstraint?.constant = newHeight
+        tableViewHeightConstraint?.constant = newHeight
         updateUI()
         tableView.reloadData()
     }

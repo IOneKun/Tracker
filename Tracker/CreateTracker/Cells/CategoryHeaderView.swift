@@ -4,6 +4,7 @@ import UIKit
 final class CategoryHeaderView: UICollectionReusableView {
     static let identifier = "CategoryHeaderView"
     
+    //MARK: - UI ELements
     private let titleCategory: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 19, weight: .bold)
@@ -26,6 +27,7 @@ final class CategoryHeaderView: UICollectionReusableView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    // MARK: - Function
     func configure(with title: String) {
         titleCategory.text = title
     }

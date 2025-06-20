@@ -6,20 +6,7 @@ protocol CreateTrackerViewControllerDelegate: AnyObject {
 
 final class CreateTrackerViewController: UIViewController, ScheduleViewControllerDelegate, CategoryViewControllerDelegate {
     
-    func didSelectCategory(_ category: String) {
-        selectedCategory = category
-        optionsTableView.reloadData()
-        updateCreateButtonState()
-        
-        print("Category was chosen: \(category)")
-    }
-    
-    func didSelectDays(_ days: [Weekday]) {
-        self.selectedSchedule = days
-        updateScheduleOptionText()
-        updateCreateButtonState()
-        optionsTableView.reloadData()
-    }
+    //MARK: - Tracker Setup
     
     weak var delegate: CreateTrackerViewControllerDelegate?
     
@@ -27,8 +14,6 @@ final class CreateTrackerViewController: UIViewController, ScheduleViewControlle
     private var selectedCategory: String?
     private var selectedSchedule: [Weekday] = []
     private var categories: [TrackerCategory] = []
-    private let textFieldView = TrackerTextFieldView()
-    private let buttonsView = ActionButtonsView()
     private var options: [TrackerOptionType] {
         switch trackerType {
         case .habit:
@@ -40,6 +25,10 @@ final class CreateTrackerViewController: UIViewController, ScheduleViewControlle
     private var selectedEmojiIndex: IndexPath?
     private var selectedColorIndex: IndexPath?
     
+    //MARK: - UI Elements
+    
+    private let textFieldView = TrackerTextFieldView()
+    private let buttonsView = ActionButtonsView()
     private lazy var optionsTableView: UITableView = {
         let table = UITableView()
         table.translatesAutoresizingMaskIntoConstraints = false
@@ -112,6 +101,8 @@ final class CreateTrackerViewController: UIViewController, ScheduleViewControlle
         return stack
     }()
     
+    //MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
@@ -121,7 +112,10 @@ final class CreateTrackerViewController: UIViewController, ScheduleViewControlle
         buttonsView.cancelButton.addTarget(self, action:
                                             #selector(cancelButtonTapped), for: .touchUpInside)
         textFieldView.textField.addTarget(self, action: #selector(titleTextFieldChanged), for: .editingChanged)
+        setupTapToHideKeyboard()
     }
+    
+    //MARK: - Functions
     
     private func setupLayout() {
         view.addSubview(scrollView)
@@ -202,17 +196,26 @@ final class CreateTrackerViewController: UIViewController, ScheduleViewControlle
         let isScheduleValid = trackerType == .habit ? !selectedSchedule.isEmpty : true
         let isEmojiChosen = selectedEmojiIndex != nil
         let isColorChosen = selectedColorIndex != nil
-
+        
         let isFormValid = isTitleEntered && isCategorySelected && isScheduleValid && isColorChosen && isEmojiChosen
-
+        
         buttonsView.createButton.isEnabled = isFormValid
         buttonsView.createButton.backgroundColor = isFormValid ? .blackDay : .gray
+    }
+    
+    private func setupTapToHideKeyboard() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(hideKeyboard))
+        tapGesture.cancelsTouchesInView = false
+        view.addGestureRecognizer(tapGesture)
+    }
+    @objc private func hideKeyboard() {
+        view.endEditing(true)
     }
     
     @objc private func titleTextFieldChanged() {
         updateCreateButtonState()
     }
-
+    
     
     private func showAlert(message: String) {
         let alert = UIAlertController(title: nil, message: message, preferredStyle: .alert)
@@ -231,6 +234,21 @@ final class CreateTrackerViewController: UIViewController, ScheduleViewControlle
             let shortNames = sortedDays.map { $0.shortName } //
             cell.setDetailText(shortNames.joined(separator: ", "))
         }
+    }
+    //MARK: - Delegate Functions
+    
+    func didSelectCategory(_ category: String) {
+        selectedCategory = category
+        optionsTableView.reloadData()
+        updateCreateButtonState()
+        optionsTableView.reloadData()
+    }
+    
+    func didSelectDays(_ days: [Weekday]) {
+        self.selectedSchedule = days
+        updateScheduleOptionText()
+        updateCreateButtonState()
+        optionsTableView.reloadData()
     }
 }
 
@@ -253,13 +271,15 @@ extension CreateTrackerViewController: UITableViewDelegate, UITableViewDataSourc
         
         switch option {
         case .schedule:
-            if !selectedSchedule.isEmpty {
-                let daysText = selectedSchedule.map { $0.shortName }.joined(separator: ", ")
-                cell.setDetailText(daysText)
-            } else {
+            if selectedSchedule.count == 7 {
+                cell.setDetailText("Каждый день")
+            } else if selectedSchedule.isEmpty {
                 cell.setDetailText("")
+            } else {
+                let sortedDays = selectedSchedule.sorted { $0.rawValue < $1.rawValue }
+                let shortNames = sortedDays.map { $0.shortName }
+                cell.setDetailText(shortNames.joined(separator: ", "))
             }
-            
         case .category:
             if let selectedCategory = selectedCategory, !selectedCategory.isEmpty {
                 cell.setDetailText(selectedCategory)
@@ -269,7 +289,6 @@ extension CreateTrackerViewController: UITableViewDelegate, UITableViewDataSourc
         }
         return cell
     }
-
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         let selectionOption = options[indexPath.row]
@@ -328,6 +347,7 @@ extension CreateTrackerViewController: UICollectionViewDelegateFlowLayout, UICol
             selectedColorIndex = indexPath
             collectionView.reloadData()
         }
+        updateCreateButtonState()
     }
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {

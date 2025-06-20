@@ -9,6 +9,8 @@ final class ScheduleViewController: UIViewController {
     
     weak var delegate: ScheduleViewControllerDelegate?
     
+    //MARK: - Setup ScheduleVC
+    
     private var selectedDays: Set<Weekday> = []
     
     private let tableView: UITableView = {
@@ -34,6 +36,8 @@ final class ScheduleViewController: UIViewController {
         return button
     }()
     
+    //MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Расписание"
@@ -45,6 +49,8 @@ final class ScheduleViewController: UIViewController {
         tableView.tableFooterView = UIView()
         tableView.tableHeaderView = UIView()
     }
+    
+    //MARK: - Functions
     
     private func setupLayout() {
         view.addSubview(tableView)

@@ -1,6 +1,8 @@
 import UIKit
 
 final class ColorCell: UICollectionViewCell {
+    
+    //MARK: - UI Elements
     static let reuseId = "ColorCell"
     
     private let selectedBorderLayer = CALayer()
@@ -11,6 +13,8 @@ final class ColorCell: UICollectionViewCell {
         view.layer.masksToBounds = true
         return view
     }()
+    
+    //MARK: - Init
     override init(frame: CGRect) {
         super.init(frame: frame)
         contentView.addSubview(colorView)
@@ -42,6 +46,8 @@ final class ColorCell: UICollectionViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    //MARK: - Function
     func configure(with color: UIColor, isSelected: Bool) {
         colorView.backgroundColor = color
         

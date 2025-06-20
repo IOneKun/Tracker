@@ -3,6 +3,7 @@ import UIKit
 final class CategoryCell: UITableViewCell {
     static let reuseIdentifier = "CategoryCell"
     
+    // MARK: - UI Elements
     private let nameLabel = UILabel()
     private let checkmarkImageView = UIImageView()
     
@@ -14,7 +15,7 @@ final class CategoryCell: UITableViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+    // MARK: - Functions
     private func configureUI() {
         backgroundColor = .grayDay
         selectionStyle = .none

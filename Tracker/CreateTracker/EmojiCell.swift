@@ -3,6 +3,7 @@ import UIKit
 final class EmojiCell: UICollectionViewCell {
     static let reuseId = "EmojiCell"
     
+    //MARK: - UI Elements
     private let emojiLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 32)
@@ -10,7 +11,7 @@ final class EmojiCell: UICollectionViewCell {
         label.textAlignment = .center
         return label
     }()
-    
+    //MARK: - Init
     override init(frame: CGRect) {
         super.init(frame: frame)
         contentView.backgroundColor = .clear
@@ -29,6 +30,7 @@ final class EmojiCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    //MARK: - Function
     func configure(with emoji: String, isSelected: Bool) {
         emojiLabel.text = emoji
         contentView.backgroundColor = isSelected ? UIColor.grayDay : .clear

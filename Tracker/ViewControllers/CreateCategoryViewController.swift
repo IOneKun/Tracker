@@ -9,13 +9,15 @@ final class CreateCategoryViewController: UIViewController {
     
     weak var delegate: CreateCategoryViewControllerDelegate?
     
+    //MARK: - UI Elements
+    
     private let doneButton: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Готово", for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
         button.setTitleColor(.white, for: .normal)
-        button.isEnabled = false 
+        button.isEnabled = false
         button.backgroundColor = .gray
         button.layer.cornerRadius = 16
         return button
@@ -32,6 +34,8 @@ final class CreateCategoryViewController: UIViewController {
         return textField
     }()
     
+    //MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Новая категория"
@@ -41,6 +45,8 @@ final class CreateCategoryViewController: UIViewController {
         textField.addTarget(self, action: #selector(textFieldChanged), for: .editingChanged)
         updateDoneButtonState()
     }
+    
+    //MARK: - Layout
     
     func setupLayout() {
         view.addSubview(textField)
@@ -58,6 +64,8 @@ final class CreateCategoryViewController: UIViewController {
             doneButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16)
         ])
     }
+    
+    //MARK: - Functions
     
     @objc private func doneCategoryButtonTapped() {
         guard let categoryName = textField.text, !categoryName.isEmpty else {

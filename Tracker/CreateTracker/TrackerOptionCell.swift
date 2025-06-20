@@ -2,12 +2,13 @@ import Foundation
 import UIKit
 
 final class TrackerOptionCell: UITableViewCell {
+    //MARK: - UI ELements
     static let reuseIdentifier = "TrackerOptionCell"
     
     private let optionNameLabel = UILabel()
     private let selectedValueLabel = UILabel()
     private let chevronImageView = UIImageView(image: UIImage(systemName: "chevron.right"))
-    
+    //MARK: - Init
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         configureUI()
@@ -16,7 +17,7 @@ final class TrackerOptionCell: UITableViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+    //MARK: - Functions 
     private func configureUI() {
         backgroundColor = .grayDay
         

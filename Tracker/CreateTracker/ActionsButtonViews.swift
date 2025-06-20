@@ -2,6 +2,8 @@ import Foundation
 import UIKit
 
 final class ActionButtonsView: UIView {
+    
+    //MARK: - UI Elements
     let cancelButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Отменить", for: .normal)
@@ -21,6 +23,8 @@ final class ActionButtonsView: UIView {
         return button
     }()
     
+    //MARK: - Init
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupLayout()
@@ -29,6 +33,8 @@ final class ActionButtonsView: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    // MARK: - Function
     
     private func setupLayout() {
         let stack = UIStackView(arrangedSubviews: [cancelButton, createButton])
