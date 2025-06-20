@@ -10,12 +10,10 @@ class MainTabBarViewController: UITabBarController {
                                              image: UIImage(named: "tracker_bar_item"),
                                              selectedImage: nil)
         
-        
         let statisticVC = UINavigationController(rootViewController: StatisticViewController())
         statisticVC.tabBarItem = UITabBarItem(title: "Статистика",
                                               image: UIImage(named: "statistic_bar_item"),
                                               selectedImage: nil)
-        
         
         self.viewControllers = [trackersVC, statisticVC]
     }
