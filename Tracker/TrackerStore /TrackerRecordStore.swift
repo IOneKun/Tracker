@@ -20,7 +20,6 @@ final class TrackerRecordStore {
     func completedDaysCount(for trackerId: UUID) -> Int {
         return records.filter { $0.trackerID == trackerId }.count
     }
-    
 }
 
 

@@ -258,7 +258,7 @@ extension TrackersViewController: UICollectionViewDataSource, UICollectionViewDe
         }
         
         let tracker = visibleCategories[indexPath.section].trackers[indexPath.item]
-        let isCompleted = isTrackerCompleted(tracker, on: selectedDate)
+        let isCompleted = trackerRecordStore.isTrackerCompleted(tracker.id, on: selectedDate)
         let completedDays = trackerRecordStore.completedDaysCount(for: tracker.id)
         cell.configure(with: tracker, completedDays: completedDays, isCompleted: isCompleted)
         cell.delegate = self

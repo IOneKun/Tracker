@@ -49,7 +49,7 @@ final class TrackerCell: UICollectionViewCell {
         return label
     }()
     
-    let plusButton: UIButton = {
+    var plusButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(named: "plus_button"), for: .normal)
         button.layer.cornerRadius = 17
@@ -93,10 +93,19 @@ final class TrackerCell: UICollectionViewCell {
             }
         }
         coloredBackgroundView.backgroundColor = tracker.color
-        
-        let buttonImageName = isCompleted ? "done_button" : "plus_button"
-        plusButton.setImage(UIImage(named: buttonImageName), for: .normal)
-        plusButton.tintColor = tracker.color
+     
+        if isCompleted {
+            
+            let image = UIImage(named: "done_button")?.withRenderingMode(.alwaysOriginal)
+            plusButton.setImage(image, for: .normal)
+            plusButton.tintColor = nil
+            plusButton.backgroundColor = .clear
+        } else {
+            
+            let image = UIImage(named: "custom_plus_button")?.withRenderingMode(.alwaysTemplate)
+            plusButton.setImage(image, for: .normal)
+            plusButton.tintColor = tracker.color
+        }
     }
     
     // MARK: - Layout
