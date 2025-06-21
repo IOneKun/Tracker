@@ -9,7 +9,7 @@ final class ScheduleViewController: UIViewController {
     
     weak var delegate: ScheduleViewControllerDelegate?
     
-    //MARK: - Setup ScheduleVC
+    //MARK: - UI Elements
     
     private var selectedDays: Set<Weekday> = []
     
@@ -77,6 +77,8 @@ final class ScheduleViewController: UIViewController {
     }
 }
 
+// MARK: - UITableViewDataSource & UITableViewDelegate
+
 extension ScheduleViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -94,7 +96,7 @@ extension ScheduleViewController: UITableViewDataSource, UITableViewDelegate {
         }
         
         let day = Weekday.allCases[indexPath.row]
-        cell.configure(with: day, isOn: selectedDays.contains(day))
+        cell.configure(with: day, isEnabled: selectedDays.contains(day))
         cell.switchChanged = { [weak self] isOn in
             guard let self = self else { return }
             if isOn {

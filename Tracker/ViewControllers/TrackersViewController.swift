@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-final class TrackersViewController: UIViewController, CreateTrackerViewControllerDelegate, TrackerCellDelegate, UISearchBarDelegate {
+final class TrackersViewController: UIViewController {
     
     //MARK: - Setup TrackersVC
     
@@ -117,38 +117,6 @@ final class TrackersViewController: UIViewController, CreateTrackerViewControlle
         filterTrackersForSelectedDate()
     }
     
-    //MARK: - Delegate Functions
-    
-    func trackerCellDidTapComplete(_ cell: TrackerCell) {
-        guard let indexPath = collectionView.indexPath(for: cell) else { return }
-        let tracker = visibleCategories[indexPath.section].trackers[indexPath.item]
-        
-        if isFutureDate(selectedDate) {
-            return
-        }
-        if isTrackerCompleted(tracker, on: selectedDate) {
-            trackerRecordStore.removeRecord(for: tracker.id, on: selectedDate)
-        } else {
-            let record = TrackerRecord(trackerID: tracker.id, date: selectedDate)
-            trackerRecordStore.addRecord(record)
-        }
-        collectionView.reloadItems(at: [indexPath])
-        filterTrackersForSelectedDate()
-    }
-    
-    
-    func didCreateTracker(_ tracker: Tracker, in category: String) {
-        if let index = trackerCategories.firstIndex(where: { $0.name == category }) {
-            trackerCategories[index].trackers.append(tracker)
-        } else {
-            trackerCategories.append(TrackerCategory(name: category, trackers: [tracker]))
-        }
-        
-        collectionView.reloadData()
-        updatePlaceholderVisibility()
-        filterTrackersForSelectedDate()
-    }
-    
     //MARK: - Layout
     
     func setupNavBarLabelAndSearchBar() {
@@ -210,9 +178,7 @@ final class TrackersViewController: UIViewController, CreateTrackerViewControlle
         view.bringSubviewToFront(mockImageView)
         view.bringSubviewToFront(mockEmptyLabel)
     }
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        searchBar.resignFirstResponder()
-    }
+    
     private func setupTapToHideKeyboard() {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(hideKeyboard))
         tapGesture.cancelsTouchesInView = false
@@ -242,6 +208,9 @@ final class TrackersViewController: UIViewController, CreateTrackerViewControlle
         ])
     }
 }
+
+//MARK: - UIColectionViewDataSource, UICollectionViewDelegateFlowLayout
+
 extension TrackersViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -296,3 +265,47 @@ extension TrackersViewController: UICollectionViewDataSource, UICollectionViewDe
     }
 }
 
+//MARK: - CreateTrackerVCDelegate
+
+extension TrackersViewController: CreateTrackerViewControllerDelegate {
+    func didCreateTracker(_ tracker: Tracker, in category: String) {
+        if let index = trackerCategories.firstIndex(where: { $0.name == category }) {
+            trackerCategories[index].trackers.append(tracker)
+        } else {
+            trackerCategories.append(TrackerCategory(name: category, trackers: [tracker]))
+        }
+        
+        collectionView.reloadData()
+        updatePlaceholderVisibility()
+        filterTrackersForSelectedDate()
+    }
+}
+
+//MARK: - TrackerCellDelegate
+
+extension TrackersViewController: TrackerCellDelegate {
+    func trackerCellDidTapComplete(_ cell: TrackerCell) {
+        guard let indexPath = collectionView.indexPath(for: cell) else { return }
+        let tracker = visibleCategories[indexPath.section].trackers[indexPath.item]
+        
+        if isFutureDate(selectedDate) {
+            return
+        }
+        if isTrackerCompleted(tracker, on: selectedDate) {
+            trackerRecordStore.removeRecord(for: tracker.id, on: selectedDate)
+        } else {
+            let record = TrackerRecord(trackerID: tracker.id, date: selectedDate)
+            trackerRecordStore.addRecord(record)
+        }
+        collectionView.reloadItems(at: [indexPath])
+        filterTrackersForSelectedDate()
+    }
+}
+
+//MARK: - UISearchBarDelegate
+
+extension TrackersViewController: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
+    }
+}

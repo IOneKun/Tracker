@@ -4,7 +4,7 @@ final class ScheduleSwitchCell: UITableViewCell {
     //MARK: - UI Elements
     static let identifier = "ScheduleSwitchCell"
     
-    private let titleLabel: UILabel = {
+    private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 17)
@@ -45,9 +45,9 @@ final class ScheduleSwitchCell: UITableViewCell {
     }
     
     //MARK: - Functions
-    func configure(with day: Weekday, isOn: Bool) {
+    func configure(with day: Weekday, isEnabled: Bool) {
         titleLabel.text = day.displayName
-        toggleSwitch.isOn = isOn
+        toggleSwitch.isOn = isEnabled
     }
     
     @objc private func switchToggled() {

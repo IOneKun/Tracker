@@ -4,7 +4,7 @@ protocol CreateTrackerViewControllerDelegate: AnyObject {
     func didCreateTracker(_ tracker: Tracker, in category: String)
 }
 
-final class CreateTrackerViewController: UIViewController, ScheduleViewControllerDelegate, CategoryViewControllerDelegate {
+final class CreateTrackerViewController: UIViewController {
     
     //MARK: - Tracker Setup
     
@@ -235,22 +235,9 @@ final class CreateTrackerViewController: UIViewController, ScheduleViewControlle
             cell.setDetailText(shortNames.joined(separator: ", "))
         }
     }
-    //MARK: - Delegate Functions
-    
-    func didSelectCategory(_ category: String) {
-        selectedCategory = category
-        optionsTableView.reloadData()
-        updateCreateButtonState()
-        optionsTableView.reloadData()
-    }
-    
-    func didSelectDays(_ days: [Weekday]) {
-        self.selectedSchedule = days
-        updateScheduleOptionText()
-        updateCreateButtonState()
-        optionsTableView.reloadData()
-    }
 }
+
+//MARK: - UITableViewDelegate, UITableViewDataSource
 
 extension CreateTrackerViewController: UITableViewDelegate, UITableViewDataSource {
     
@@ -315,6 +302,9 @@ extension CreateTrackerViewController: UITableViewDelegate, UITableViewDataSourc
         }
     }
 }
+
+//MARK: - UICollectionViewDelegateFlowLayout, UICollectionViewDataSource
+
 extension CreateTrackerViewController: UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -360,5 +350,27 @@ extension CreateTrackerViewController: UICollectionViewDelegateFlowLayout, UICol
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
         let cellWidth = (collectionView.bounds.width - (5 * 5)) / 6
         return CGSize(width: cellWidth, height: 52)
+    }
+}
+
+//MARK: - ScheduleVCDelegate
+
+extension CreateTrackerViewController: ScheduleViewControllerDelegate {
+    func didSelectDays(_ days: [Weekday]) {
+        self.selectedSchedule = days
+        updateScheduleOptionText()
+        updateCreateButtonState()
+        optionsTableView.reloadData()
+    }
+}
+
+//MARK: - CategoryVCDeleagte
+
+extension CreateTrackerViewController: CategoryViewControllerDelegate {
+    func didSelectCategory(_ category: String) {
+        selectedCategory = category
+        optionsTableView.reloadData()
+        updateCreateButtonState()
+        optionsTableView.reloadData()
     }
 }

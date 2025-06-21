@@ -16,6 +16,7 @@ final class CategoryCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     // MARK: - Functions
+    
     private func configureUI() {
         backgroundColor = .grayDay
         selectionStyle = .none
