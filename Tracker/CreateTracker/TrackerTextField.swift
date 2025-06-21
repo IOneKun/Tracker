@@ -7,7 +7,7 @@ final class TrackerTextFieldView: UIView {
         let textField = UITextField()
         textField.placeholder = "Введите название трекера"
         textField.font = .systemFont(ofSize: 17, weight: .regular)
-        textField.backgroundColor = .grayDay
+        textField.backgroundColor = .lightGrayDay
         textField.layer.cornerRadius = 16
         
         let paddingView = UIView(frame: CGRect(x: 0, y:0, width: 16, height: 0))

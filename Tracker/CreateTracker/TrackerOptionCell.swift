@@ -19,7 +19,7 @@ final class TrackerOptionCell: UITableViewCell {
     }
     //MARK: - Functions 
     private func configureUI() {
-        backgroundColor = .grayDay
+        backgroundColor = .lightGrayDay
         
         optionNameLabel.font = UIFont.systemFont(ofSize: 17)
         selectedValueLabel.font = UIFont.systemFont(ofSize: 15)

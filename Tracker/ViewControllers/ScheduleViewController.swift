@@ -87,6 +87,11 @@ extension ScheduleViewController: UITableViewDataSource, UITableViewDelegate {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: ScheduleSwitchCell.identifier, for: indexPath) as? ScheduleSwitchCell else {
             return UITableViewCell()
         }
+        if indexPath.row == Weekday.allCases.count - 1 {
+            cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: .greatestFiniteMagnitude)
+        } else {
+            cell.separatorInset = UIEdgeInsets(top:0, left: 16, bottom: 0, right: 16)
+        }
         
         let day = Weekday.allCases[indexPath.row]
         cell.configure(with: day, isOn: selectedDays.contains(day))

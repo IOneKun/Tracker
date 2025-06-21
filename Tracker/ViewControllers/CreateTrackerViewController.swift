@@ -38,7 +38,7 @@ final class CreateTrackerViewController: UIViewController, ScheduleViewControlle
         table.separatorStyle = .singleLine
         table.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         table.isScrollEnabled = false
-        table.backgroundColor = .grayDay
+        
         table.layer.cornerRadius = 16
         return table
     }()
@@ -255,9 +255,9 @@ final class CreateTrackerViewController: UIViewController, ScheduleViewControlle
 extension CreateTrackerViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        print("rows count:", options.count)
         return options.count
     }
-    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 75
     }
@@ -266,6 +266,13 @@ extension CreateTrackerViewController: UITableViewDelegate, UITableViewDataSourc
         guard let cell = tableView.dequeueReusableCell(withIdentifier: TrackerOptionCell.reuseIdentifier) as? TrackerOptionCell else {
             return UITableViewCell()
         }
+        
+        if indexPath.row == options.count - 1 {
+            cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: .greatestFiniteMagnitude)
+        } else {
+            cell.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+        }
+        
         let option = options[indexPath.row]
         cell.configure(with: option)
         
