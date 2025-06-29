@@ -1,4 +1,5 @@
 import UIKit
+import CoreData
 
 protocol CreateTrackerViewControllerDelegate: AnyObject {
     func didCreateTracker(_ tracker: Tracker, in category: String)
@@ -47,10 +48,12 @@ final class CreateTrackerViewController: UIViewController {
         let label = UILabel()
         label.text = "Emoji"
         label.font = .systemFont(ofSize: 19, weight: .bold)
+        label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
     public lazy var emojiCollectionView: UICollectionView = {
+        
         let layout = UICollectionViewFlowLayout()
         layout.minimumLineSpacing = 5
         layout.minimumInteritemSpacing = 5
@@ -65,10 +68,12 @@ final class CreateTrackerViewController: UIViewController {
         return collectionView
     }()
     
+    
     private lazy var colorLabel: UILabel = {
         let label = UILabel()
         label.text = "Цвет"
         label.font = .systemFont(ofSize: 19, weight: .bold)
+        label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
@@ -118,6 +123,29 @@ final class CreateTrackerViewController: UIViewController {
     //MARK: - Functions
     
     private func setupLayout() {
+        let emojiLabelContainer = UIView()
+        emojiLabelContainer.addSubview(emojiLabel)
+        
+        NSLayoutConstraint.activate([
+            emojiLabel.leadingAnchor.constraint(equalTo: emojiLabelContainer.leadingAnchor, constant: 16),
+            emojiLabel.topAnchor.constraint(equalTo: emojiLabelContainer.topAnchor),
+            emojiLabel.bottomAnchor.constraint(equalTo: emojiLabelContainer.bottomAnchor)
+        ])
+        
+        emojiLabelContainer.heightAnchor.constraint(equalToConstant: 18).isActive = true
+        
+        let colorLabelContainer = UIView()
+        colorLabelContainer.addSubview(colorLabel)
+        
+        NSLayoutConstraint.activate([
+            colorLabel.leadingAnchor.constraint(equalTo: colorLabelContainer.leadingAnchor, constant: 16),
+            colorLabel.topAnchor.constraint(equalTo: colorLabelContainer.topAnchor),
+            colorLabel.bottomAnchor.constraint(equalTo: colorLabelContainer.bottomAnchor),
+        ])
+        
+        colorLabelContainer.heightAnchor.constraint(equalToConstant: 18).isActive = true
+        
+        
         view.addSubview(scrollView)
         view.addSubview(buttonsView)
         scrollView.addSubview(contentStackView)
@@ -125,7 +153,7 @@ final class CreateTrackerViewController: UIViewController {
         contentStackView.translatesAutoresizingMaskIntoConstraints = false
         buttonsView.translatesAutoresizingMaskIntoConstraints = false
         
-        [textFieldView, optionsTableView, emojiLabel, emojiCollectionView, colorLabel, colorCollectionView].forEach {
+        [textFieldView, optionsTableView, emojiLabelContainer, emojiCollectionView, colorLabelContainer, colorCollectionView].forEach {
             contentStackView.addArrangedSubview($0)
         }
         
@@ -141,16 +169,14 @@ final class CreateTrackerViewController: UIViewController {
             contentStackView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
             
             contentStackView.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -32),
-            
             buttonsView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             buttonsView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             buttonsView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
             buttonsView.heightAnchor.constraint(equalToConstant: 60),
-            
             textFieldView.heightAnchor.constraint(equalToConstant: 75),
             optionsTableView.heightAnchor.constraint(equalToConstant: CGFloat(options.count * 75)),
             emojiCollectionView.heightAnchor.constraint(equalToConstant: 204),
-            colorCollectionView.heightAnchor.constraint(equalToConstant: 220),
+            colorCollectionView.heightAnchor.constraint(equalToConstant: 204),
         ])
     }
     

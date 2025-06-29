@@ -1,6 +1,6 @@
 import Foundation
 
-final class TrackerRecordStore {
+final class TrackerRecordStore1 {
     private(set) var records: [TrackerRecord] = []
     
     func addRecord(_ record: TrackerRecord) {

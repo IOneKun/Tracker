@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import CoreData
 
 final class TrackersViewController: UIViewController {
     
@@ -156,7 +157,7 @@ final class TrackersViewController: UIViewController {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         layout.minimumLineSpacing = 16
-        layout.minimumInteritemSpacing = 9
+        layout.minimumInteritemSpacing = 7
         layout.sectionInset = UIEdgeInsets(top: 8, left: 16, bottom: 0, right: 16)
         layout.headerReferenceSize = CGSize(width: view.bounds.width, height: 30)
         
@@ -259,7 +260,7 @@ extension TrackersViewController: UICollectionViewDataSource, UICollectionViewDe
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let availableWidth = collectionView.bounds.width - 16 * 2 - 9
+        let availableWidth = collectionView.bounds.width - 16 * 2 - 7
         let cellWidth = availableWidth / 2
         return CGSize(width: cellWidth, height: 148)
     }

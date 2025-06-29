@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import CoreData
 
 protocol CreateCategoryViewControllerDelegate: AnyObject {
     func didCreateCategory(_ category: String)
