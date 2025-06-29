@@ -35,7 +35,6 @@ final class TrackerOptionCell: UITableViewCell {
         
         let mainStack = UIStackView(arrangedSubviews: [labelsStack, chevronImageView])
         mainStack.axis = .horizontal
-        mainStack.spacing = 8
         mainStack.alignment = .center
         mainStack.translatesAutoresizingMaskIntoConstraints = false
         
