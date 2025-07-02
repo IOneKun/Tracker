@@ -1,6 +1,4 @@
-import Foundation
 import UIKit
-import CoreData
 
 protocol ScheduleViewControllerDelegate: AnyObject {
     func didSelectDays(_ days: [Weekday])

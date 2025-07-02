@@ -1,6 +1,4 @@
-import Foundation
 import UIKit
-import CoreData
 
 final class TrackersViewController: UIViewController, TrackerRecordStoreDelegate {
     func storeDidUpdateTrackerRecords(_ store: TrackerRecordStore) {

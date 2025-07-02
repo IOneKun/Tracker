@@ -1,4 +1,3 @@
-import Foundation
 import UIKit
 import CoreData
 
@@ -6,21 +5,21 @@ protocol TrackerCategoryStoreDelegate: AnyObject {
     func storeDidUpdateTrackerCategories(_ store: TrackerCategoryStore)
 }
 
-class TrackerCategoryStore: NSObject {
+final class TrackerCategoryStore: NSObject {
     
     weak var delegate: TrackerCategoryStoreDelegate?
     
     var context: NSManagedObjectContext
-    var fetchedResultsController: NSFetchedResultsController<TrackerCategoryCoreData>!
+    var fetchedResultsController: NSFetchedResultsController<TrackerCategoryCoreData>?
     
     init(context: NSManagedObjectContext) {
         self.context = context
     }
     convenience override init() {
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        let context = appDelegate.persistentContainer.viewContext
+        let context = CoreDataManager.shared.context
         self.init(context: context)
     }
+    
     func setupFetchedResultsController() {
         let fetchRequest = NSFetchRequest<TrackerCategoryCoreData>(entityName:"TrackerCategoryCoreData")
         let sortDescriptor = NSSortDescriptor(key: "name", ascending: true)
@@ -32,16 +31,16 @@ class TrackerCategoryStore: NSObject {
             sectionNameKeyPath: nil,
             cacheName: nil
         )
-        fetchedResultsController.delegate = self
+        fetchedResultsController?.delegate = self
         
         do {
-            try fetchedResultsController.performFetch()
+            try fetchedResultsController?.performFetch()
         } catch {
             print("\(error)")
         }
     }
     func fetchCategories() throws -> [TrackerCategoryCoreData] {
-        guard let objects = fetchedResultsController.fetchedObjects else {
+        guard let objects = fetchedResultsController?.fetchedObjects else {
             return []
         }
         return objects

@@ -1,4 +1,3 @@
-import Foundation
 import CoreData
 import UIKit
 
@@ -6,20 +5,18 @@ protocol TrackerStoreDelegate: AnyObject {
     func storeDidUpdateTrackersStore(_ store: TrackerStore)
 }
 
-class TrackerStore: NSObject {
+final class TrackerStore: NSObject {
     
     weak var delegate: TrackerStoreDelegate?
     
     var context: NSManagedObjectContext!
-    var fetchedResultsController: NSFetchedResultsController<TrackerCoreData>!
+    var fetchedResultsController: NSFetchedResultsController<TrackerCoreData>?
     
     init (context: NSManagedObjectContext) {
         self.context = context
     }
     convenience override init() {
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        let context = appDelegate.persistentContainer.viewContext
-        
+        let context = CoreDataManager.shared.context
         self.init(context: context)
     }
     func setupFetchedResultsController() {
@@ -34,16 +31,16 @@ class TrackerStore: NSObject {
             cacheName: nil
         )
         
-        fetchedResultsController.delegate = self
+        fetchedResultsController?.delegate = self
         
         do {
-            try fetchedResultsController.performFetch()
+            try fetchedResultsController?.performFetch()
         } catch {
             print("\(error)")
         }
     }
     func fetchTrackers() throws -> [TrackerCoreData] {
-        guard let objects = fetchedResultsController.fetchedObjects else {
+        guard let objects = fetchedResultsController?.fetchedObjects else {
             return []
         }
         return objects

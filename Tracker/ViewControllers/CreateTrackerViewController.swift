@@ -1,5 +1,4 @@
 import UIKit
-import CoreData
 
 protocol CreateTrackerViewControllerDelegate: AnyObject {
     func didCreateTracker(_ tracker: Tracker, in category: String)
