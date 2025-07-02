@@ -1,9 +1,10 @@
-import Foundation
 import UIKit
 
 final class TrackerTypeViewController: UIViewController {
     
     weak var delegate: CreateTrackerViewControllerDelegate?
+    private let trackerStore: TrackerStore
+    private let trackerCategoryStore: TrackerCategoryStore
     
     //MARK: - Lifecycle
     
@@ -14,16 +15,28 @@ final class TrackerTypeViewController: UIViewController {
         title = "Создание трекера"
         setupUITrackerTypeVC()
     }
+    init(trackerStore: TrackerStore, trackerCategoryStore: TrackerCategoryStore) {
+        self.trackerStore = trackerStore
+        self.trackerCategoryStore = trackerCategoryStore
+        super.init(nibName: nil, bundle: nil)
+    }
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     //MARK: - Functions
     
     func showCreateTracker() {
-        let createTrackerVC = CreateTrackerViewController()
+        let createTrackerVC = CreateTrackerViewController(
+            trackerStore: trackerStore, trackerCategoryStore: trackerCategoryStore)
         createTrackerVC.delegate = delegate
         navigationController?.pushViewController(createTrackerVC, animated: true)
     }
     @objc func habitButtonTapped() {
-        let createVC = CreateTrackerViewController()
+        let createVC = CreateTrackerViewController(
+            trackerStore: trackerStore,
+            trackerCategoryStore: trackerCategoryStore
+        )
         createVC.delegate = delegate
         createVC.trackerType = .habit
         let navController = UINavigationController(rootViewController: createVC)
@@ -32,9 +45,13 @@ final class TrackerTypeViewController: UIViewController {
     }
     
     @objc func irregularButtonTapped() {
-        let createVC = CreateTrackerViewController()
+        let createVC = CreateTrackerViewController(
+            trackerStore: trackerStore,
+            trackerCategoryStore: trackerCategoryStore
+        )
         createVC.delegate = delegate
         createVC.trackerType = .irregularEvent
+        
         let navController = UINavigationController(rootViewController: createVC)
         navController.modalPresentationStyle = .pageSheet
         present(navController, animated: true)
