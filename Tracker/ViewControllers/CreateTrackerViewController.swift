@@ -11,6 +11,9 @@ final class CreateTrackerViewController: UIViewController {
     
     weak var delegate: CreateTrackerViewControllerDelegate?
     
+    let trackerStore: TrackerStore
+    let trackerCategoryStore: TrackerCategoryStore
+    
     var trackerType: TrackerType = .habit
     private var selectedCategory: String?
     private var selectedSchedule: [Weekday] = []
@@ -25,6 +28,18 @@ final class CreateTrackerViewController: UIViewController {
     }
     private var selectedEmojiIndex: IndexPath?
     private var selectedColorIndex: IndexPath?
+    
+    //MARK: - Init
+    
+    init (trackerStore: TrackerStore, trackerCategoryStore: TrackerCategoryStore) {
+        self.trackerStore = trackerStore
+        self.trackerCategoryStore = trackerCategoryStore
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     //MARK: - UI Elements
     
@@ -207,7 +222,7 @@ final class CreateTrackerViewController: UIViewController {
             showAlert(message: "Выберите категорию")
             return
         }
-        delegate?.didCreateTracker(tracker, in: selectedCategory)
+        try? trackerStore.addTracker(id: tracker.id, name: title, emoji: emojis[emojiIndex.item], color: colors[colorIndex.item], schedule: selectedSchedule, category: selectedCategory)
         presentingViewController?.presentingViewController?.dismiss(animated: true)
     }
     
