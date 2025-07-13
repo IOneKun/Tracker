@@ -1,12 +1,16 @@
-import Foundation
 import UIKit
-import CoreData
 
-final class TrackersViewController: UIViewController {
+final class TrackersViewController: UIViewController, TrackerRecordStoreDelegate {
+    func storeDidUpdateTrackerRecords(_ store: TrackerRecordStore) {
+        filterTrackersForSelectedDate()
+        collectionView.reloadData()
+    }
     
     //MARK: - Setup TrackersVC
     
+    private let trackerStore = TrackerStore()
     private let trackerRecordStore = TrackerRecordStore()
+    private let trackerCategoryStore = TrackerCategoryStore()
     private var selectedDate = Date()
     private var visibleCategories: [TrackerCategory] = []
     private var isDateSelectedByUser = false
@@ -60,7 +64,17 @@ final class TrackersViewController: UIViewController {
         searchBar.delegate = self
         setupTapToHideKeyboard()
         selectedDate = Date()
+        
+        trackerStore.delegate = self
+        trackerRecordStore.delegate = self
+        
+        trackerStore.setupFetchedResultsController()
+        trackerRecordStore.setupFetchedResultsController()
+        trackerCategoryStore.setupFetchedResultsController()
+        trackerStore.debugPrintAllTrackers()
+        reloadTrackersFromCoreData()
         filterTrackersForSelectedDate()
+        collectionView.reloadData()
     }
     
     //MARK: - Functions
@@ -99,14 +113,9 @@ final class TrackersViewController: UIViewController {
     func isFutureDate(_ date: Date) -> Bool {
         return Calendar.current.startOfDay(for: date) > Calendar.current.startOfDay(for: Date())
     }
-    func isTrackerCompleted(_ tracker: Tracker, on date: Date) -> Bool {
-        return trackerRecordStore.records.contains {
-            $0.trackerID == tracker.id && Calendar.current.isDate($0.date, inSameDayAs: date)
-        }
-    }
     
     @objc func addTrackerButtonTapped() {
-        let trackerTypeVC = TrackerTypeViewController()
+        let trackerTypeVC = TrackerTypeViewController(trackerStore: trackerStore, trackerCategoryStore: trackerCategoryStore)
         trackerTypeVC.delegate = self
         let navController = UINavigationController(rootViewController: trackerTypeVC)
         navController.modalPresentationStyle = .pageSheet
@@ -116,6 +125,44 @@ final class TrackersViewController: UIViewController {
         selectedDate = sender.date
         isDateSelectedByUser = true
         filterTrackersForSelectedDate()
+    }
+    func reloadTrackersFromCoreData() {
+        do {
+            let coreDataTrackers = try trackerStore.fetchTrackers()
+            var categoriesDict: [String: [Tracker]] = [:]
+            
+            for coreDataTracker in coreDataTrackers {
+                guard
+                    let id = coreDataTracker.id,
+                    let name = coreDataTracker.name,
+                    let emoji = coreDataTracker.emoji,
+                    let colorHex = coreDataTracker.color,
+                    let color = UIColor.fromHex(colorHex),
+                    let scheduleSet = coreDataTracker.schedule as? Set<NSNumber>,
+                    let categoryName = coreDataTracker.category?.name
+                else {
+                    continue
+                }
+                
+                let schedule = scheduleSet.compactMap { Weekday(rawValue: $0.intValue) }
+                
+                let tracker = Tracker(id: id, name: name, emoji: emoji, color: color, schedule: schedule)
+                
+                categoriesDict[categoryName, default: []].append(tracker)
+            }
+            
+            trackerCategories = categoriesDict.map {
+                TrackerCategory(name: $0.key, trackers: $0.value)
+            }
+            
+            print("Загружено категорий: \(trackerCategories.count)")
+        } catch {
+            print("Ошибка при загрузке трекеров: \(error)")
+        }
+        
+        filterTrackersForSelectedDate()
+        collectionView.reloadData()
+        updatePlaceholderVisibility()
     }
     
     //MARK: - Layout
@@ -279,6 +326,7 @@ extension TrackersViewController: CreateTrackerViewControllerDelegate {
         collectionView.reloadData()
         updatePlaceholderVisibility()
         filterTrackersForSelectedDate()
+        reloadTrackersFromCoreData()
     }
 }
 
@@ -292,11 +340,14 @@ extension TrackersViewController: TrackerCellDelegate {
         if isFutureDate(selectedDate) {
             return
         }
-        if isTrackerCompleted(tracker, on: selectedDate) {
+        if trackerRecordStore.isTrackerCompleted(tracker.id, on: selectedDate) {
             trackerRecordStore.removeRecord(for: tracker.id, on: selectedDate)
         } else {
-            let record = TrackerRecord(trackerID: tracker.id, date: selectedDate)
-            trackerRecordStore.addRecord(record)
+            do {
+                try trackerRecordStore.addTrackerRecord(with: tracker.id, on: selectedDate)
+            } catch {
+                print("\(error)")
+            }
         }
         collectionView.reloadItems(at: [indexPath])
         filterTrackersForSelectedDate()
@@ -310,3 +361,15 @@ extension TrackersViewController: UISearchBarDelegate {
         searchBar.resignFirstResponder()
     }
 }
+
+//MARK: - TrackerStoreDelegate
+
+extension TrackersViewController: TrackerStoreDelegate {
+    func storeDidUpdateTrackersStore(_ store: TrackerStore) {
+        print("storeDidUpdateTrackersStore called")
+        reloadTrackersFromCoreData()
+        updatePlaceholderVisibility()
+        collectionView.reloadData()
+    }
+}
+
