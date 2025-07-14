@@ -6,10 +6,6 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		6F73633A2DDEFAA9000364CD /* SplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F7363392DDEFAA9000364CD /* SplashViewController.swift */; };
-/* End PBXBuildFile section */
-
 /* Begin PBXContainerItemProxy section */
 		6F73623D2DDEE374000364CD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -31,7 +27,6 @@
 		6F7362262DDEE372000364CD /* Tracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6F73623C2DDEE374000364CD /* TrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TrackerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6F7362462DDEE374000364CD /* TrackerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TrackerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		6F7363392DDEFAA9000364CD /* SplashViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -93,7 +88,6 @@
 		6F73621D2DDEE372000364CD = {
 			isa = PBXGroup;
 			children = (
-				6F7363392DDEFAA9000364CD /* SplashViewController.swift */,
 				6F7362282DDEE372000364CD /* Tracker */,
 				6F73623F2DDEE374000364CD /* TrackerTests */,
 				6F7362492DDEE374000364CD /* TrackerUITests */,
@@ -255,7 +249,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6F73633A2DDEFAA9000364CD /* SplashViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -6,6 +6,8 @@ class OnboardingPageViewController: UIViewController {
     private let message: String
     private let backgroundColor: UIColor
     
+    var onFinish: (() -> Void)?
+    
     init(imageName: String, message: String, backgroundColor: UIColor) {
         self.imageName = imageName
         self.message = message
@@ -47,6 +49,8 @@ class OnboardingPageViewController: UIViewController {
         button.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(button)
         
+        button.addTarget(self, action: #selector(finishTapped), for: .touchUpInside)
+        
         NSLayoutConstraint.activate([
             button.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -50),
             button.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -69,5 +73,7 @@ class OnboardingPageViewController: UIViewController {
             label.bottomAnchor.constraint(equalTo: button.topAnchor, constant: -160)
         ])
     }
+    @objc private func finishTapped() {
+        onFinish?()
+    }
 }
-
