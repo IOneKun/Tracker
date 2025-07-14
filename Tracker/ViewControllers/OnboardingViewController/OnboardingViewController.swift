@@ -7,20 +7,18 @@ class OnboardingViewController: UIPageViewController, UIPageViewControllerDataSo
     private lazy var pages: [UIViewController] = {
         return [
             {
-                let page1 = OnboardingPageViewController(
+                let page1 = PageViewController(
                     imageName: "onboarding_page_1",
-                    message: "Отслеживайте только то, что хотите",
-                    backgroundColor: UIColor(red: 0.32, green: 0.55, blue: 1.0, alpha: 1.0)
-                )
+                    message: "Отслеживайте только то, что хотите")
+                
                 page1.onFinish = { [weak self] in self?.onFinish?() }
                 return page1
             }(),
             {
-                let page2 = OnboardingPageViewController(
+                let page2 = PageViewController(
                     imageName: "onboarding_page_2",
-                    message: "Даже если это не литры воды и йога",
-                    backgroundColor: UIColor(red: 1.0, green: 0.42, blue: 0.42, alpha: 1.0)
-                )
+                    message: "Даже если это не литры воды и йога")
+                
                 page2.onFinish = { [weak self] in self?.onFinish?() }
                 return page2
             }()

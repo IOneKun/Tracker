@@ -1,17 +1,16 @@
 import UIKit
 
-class OnboardingPageViewController: UIViewController {
+class PageViewController: UIViewController {
     
     private let imageName: String
     private let message: String
-    private let backgroundColor: UIColor
     
     var onFinish: (() -> Void)?
     
-    init(imageName: String, message: String, backgroundColor: UIColor) {
+    init(imageName: String, message: String) {
         self.imageName = imageName
         self.message = message
-        self.backgroundColor = backgroundColor
+        
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -21,7 +20,6 @@ class OnboardingPageViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = backgroundColor
         setupViews()
     }
     
