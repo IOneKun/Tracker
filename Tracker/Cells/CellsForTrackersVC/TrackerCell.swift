@@ -2,6 +2,8 @@ import UIKit
 
 protocol TrackerCellDelegate: AnyObject {
     func trackerCellDidTapComplete(_ cell: TrackerCell)
+    func trackerCellDidRequestEdit(_ cell: TrackerCell)
+    func trackerCellDidRequestDelete(_ cell: TrackerCell)
 }
 final class TrackerCell: UICollectionViewCell {
     
@@ -65,6 +67,8 @@ final class TrackerCell: UICollectionViewCell {
         contentView.layer.masksToBounds = true
         setupLayout()
         plusButton.addTarget(self, action: #selector(plusButtonTapped), for: .touchUpInside)
+        
+        setupContextMenu()
     }
     
     required init?(coder: NSCoder) {
@@ -75,6 +79,11 @@ final class TrackerCell: UICollectionViewCell {
     
     @objc private func plusButtonTapped() {
         delegate?.trackerCellDidTapComplete(self)
+    }
+    
+    private func setupContextMenu() {
+        let interaction = UIContextMenuInteraction(delegate: self)
+        coloredBackgroundView.addInteraction(interaction)
     }
     
     func configure(with tracker: Tracker, completedDays: Int, isCompleted: Bool) {
@@ -93,7 +102,8 @@ final class TrackerCell: UICollectionViewCell {
             }
         }
         coloredBackgroundView.backgroundColor = tracker.color
-     
+        coloredBackgroundView.isUserInteractionEnabled = true
+        
         if isCompleted {
             
             let image = UIImage(named: "done_button")?.withRenderingMode(.alwaysOriginal)
@@ -148,3 +158,19 @@ final class TrackerCell: UICollectionViewCell {
     }
 }
 
+extension TrackerCell: UIContextMenuInteractionDelegate {
+    
+    func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
+            let edit = UIAction(title: "Редактировать") { [weak self] _ in
+                guard let self = self else { return }
+                self.delegate?.trackerCellDidRequestEdit(self)
+            }
+            let delete = UIAction(title: "Удалить", attributes: .destructive) { [weak self] _ in
+                guard let self = self else { return }
+                self.delegate?.trackerCellDidRequestDelete(self)
+            }
+            return UIMenu(title: "", children: [edit, delete])
+        }
+    }
+}

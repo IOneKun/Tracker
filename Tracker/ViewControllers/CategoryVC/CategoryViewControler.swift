@@ -7,14 +7,13 @@ protocol CategoryViewControllerDelegate: AnyObject {
 final class CategoryViewController: UIViewController {
     //MARK: - UI Elements
     
+    private let viewModel = CategoryViewModel()
+    
     weak var delegate: CategoryViewControllerDelegate?
     
     private var tableViewHeightConstraint: NSLayoutConstraint?
     private let scrollView = UIScrollView()
     private let stackView = UIStackView()
-    
-    private var categories: [String] = []
-    private var selectedCategory: String?
     
     private let tableView: UITableView = {
         let table = UITableView()
@@ -68,9 +67,15 @@ final class CategoryViewController: UIViewController {
         tableView.dataSource = self
         addButton.addTarget(self, action: #selector(addCategoryTapped), for: .touchUpInside)
         
-        
         setupLayout()
         updateUI()
+        
+        viewModel.onCategoriesChanged = { [weak self] in
+            guard let self = self else { return }
+            self.updateUI()
+            self.tableView.reloadData()
+            self.tableViewHeightConstraint?.constant = CGFloat(self.viewModel.categories.count * 75)
+        }
     }
     
     // MARK: - Layout
@@ -105,14 +110,14 @@ final class CategoryViewController: UIViewController {
             addButton.heightAnchor.constraint(equalToConstant: 60)
         ])
         
-        tableViewHeightConstraint = tableView.heightAnchor.constraint(equalToConstant: CGFloat(categories.count * 75))
+        tableViewHeightConstraint = tableView.heightAnchor.constraint(equalToConstant: CGFloat(viewModel.categories.count * 75))
         tableViewHeightConstraint?.isActive = true
     }
     
     //MARK: - Function
     
     private func updateUI() {
-        let shouldHideEmptyState = !categories.isEmpty
+        let shouldHideEmptyState = !viewModel.categories.isEmpty
         imageView.isHidden = shouldHideEmptyState
         emptyLabel.isHidden = shouldHideEmptyState
         tableView.isHidden = !shouldHideEmptyState
@@ -132,7 +137,7 @@ final class CategoryViewController: UIViewController {
 
 extension CategoryViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        categories.count
+        viewModel.categories.count
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 75
@@ -144,30 +149,25 @@ extension CategoryViewController: UITableViewDataSource, UITableViewDelegate {
             for: indexPath
         ) as? CategoryCell else { return UITableViewCell() }
         
-        let category = categories[indexPath.row]
-        let isSelected = category == selectedCategory
+        let category = viewModel.categories[indexPath.row]
+        let isSelected = category == viewModel.selectedCategory
         cell.configure(with: category, isSelected: isSelected)
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        selectedCategory = categories[indexPath.row]
-        delegate?.didSelectCategory(selectedCategory!)
+        viewModel.selectedCategory(at: indexPath.row)
+        delegate?.didSelectCategory(viewModel.selectedCategory!)
         tableView.reloadData()
     }
-    
 }
 
 // MARK: - CreateCategoryViewControllerDelegate
 
 extension CategoryViewController: CreateCategoryViewControllerDelegate {
     func didCreateCategory(_ category: String) {
-        
-        categories.append(category)
-        let newHeight = CGFloat(categories.count * 75)
-        tableViewHeightConstraint?.constant = newHeight
-        updateUI()
-        tableView.reloadData()
+
+        viewModel.addCategory(category)
     }
 }
 

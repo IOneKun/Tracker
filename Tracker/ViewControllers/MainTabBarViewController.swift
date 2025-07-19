@@ -16,6 +16,17 @@ final class MainTabBarViewController: UITabBarController {
                                               selectedImage: nil)
         
         self.viewControllers = [trackersVC, statisticVC]
+
+        
+        if #available(iOS 15.0, *) {
+            let tabBarAppearance = UITabBarAppearance()
+            tabBarAppearance.configureWithOpaqueBackground() 
+            tabBarAppearance.backgroundColor = .white
+            
+            tabBar.standardAppearance = tabBarAppearance
+            tabBar.scrollEdgeAppearance = tabBarAppearance
+        }
+
     }
 }
 
