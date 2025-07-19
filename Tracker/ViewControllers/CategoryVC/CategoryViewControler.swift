@@ -7,7 +7,7 @@ protocol CategoryViewControllerDelegate: AnyObject {
 final class CategoryViewController: UIViewController {
     //MARK: - UI Elements
     
-    private var viewModel = CategoryViewModel()
+    private let viewModel = CategoryViewModel()
     
     weak var delegate: CategoryViewControllerDelegate?
     

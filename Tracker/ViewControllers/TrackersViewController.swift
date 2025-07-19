@@ -37,16 +37,11 @@ final class TrackersViewController: UIViewController, TrackerRecordStoreDelegate
         return label
     }()
     
-    private let searchBar: UISearchBar = {
-        let searchBar = UISearchBar()
-        searchBar.translatesAutoresizingMaskIntoConstraints = false
-        searchBar.placeholder = "Поиск"
-        searchBar.searchBarStyle = .minimal
-        searchBar.backgroundColor = .clear
-        searchBar.searchTextField.backgroundColor = UIColor.systemGray6
-        searchBar.searchTextField.layer.cornerRadius = 10
-        searchBar.searchTextField.layer.masksToBounds = true
-        return searchBar
+    private let searchTextField: UISearchTextField = {
+        let searchTextField = UISearchTextField()
+        searchTextField.translatesAutoresizingMaskIntoConstraints = false
+        searchTextField.placeholder = "Поиск"
+        return searchTextField
     }()
     
     //MARK: - Lifecycle
@@ -61,7 +56,8 @@ final class TrackersViewController: UIViewController, TrackerRecordStoreDelegate
         collectionView.dataSource = self
         collectionView.delegate = self
         
-        searchBar.delegate = self
+        searchTextField.addTarget(self, action: #selector(searchTextChanged(_:)), for: .editingChanged)
+        
         setupTapToHideKeyboard()
         selectedDate = Date()
         
@@ -75,9 +71,29 @@ final class TrackersViewController: UIViewController, TrackerRecordStoreDelegate
         reloadTrackersFromCoreData()
         filterTrackersForSelectedDate()
         collectionView.reloadData()
+
     }
     
     //MARK: - Functions
+    
+    @objc private func searchTextChanged(_ sender: UISearchTextField) {
+        guard let text = sender.text else { return }
+        filterTrackers(for: text)
+    }
+
+    private func filterTrackers(for searchText: String) {
+        if searchText.isEmpty {
+            visibleCategories = trackerCategories
+        } else {
+            visibleCategories = trackerCategories.compactMap { category in
+                let filteredTrackers = category.trackers.filter {
+                    $0.name.lowercased().contains(searchText.lowercased())
+                }
+                return filteredTrackers.isEmpty ? nil : TrackerCategory(name: category.name, trackers: filteredTrackers)
+            }
+        }
+        collectionView.reloadData()
+    }
     
     private func filterTrackersForSelectedDate() {
         if !isDateSelectedByUser {
@@ -163,6 +179,7 @@ final class TrackersViewController: UIViewController, TrackerRecordStoreDelegate
         filterTrackersForSelectedDate()
         collectionView.reloadData()
         updatePlaceholderVisibility()
+        visibleCategories = trackerCategories
     }
     
     //MARK: - Layout
@@ -186,17 +203,17 @@ final class TrackersViewController: UIViewController, TrackerRecordStoreDelegate
         navigationItem.rightBarButtonItem = datePickerItem
         
         view.addSubview(labelTracker)
-        view.addSubview(searchBar)
+        view.addSubview(searchTextField)
         
         NSLayoutConstraint.activate([
             labelTracker.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
             labelTracker.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             labelTracker.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             
-            searchBar.topAnchor.constraint(equalTo: labelTracker.bottomAnchor, constant: 8),
-            searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            searchBar.heightAnchor.constraint(equalToConstant: 36)
+            searchTextField.topAnchor.constraint(equalTo: labelTracker.bottomAnchor, constant: 8),
+            searchTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            searchTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            searchTextField.heightAnchor.constraint(equalToConstant: 36)
         ])
     }
     
@@ -218,7 +235,7 @@ final class TrackersViewController: UIViewController, TrackerRecordStoreDelegate
         view.addSubview(collectionView)
         
         NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 24),
+            collectionView.topAnchor.constraint(equalTo: searchTextField.bottomAnchor, constant: 24),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
@@ -259,7 +276,7 @@ final class TrackersViewController: UIViewController, TrackerRecordStoreDelegate
 
 //MARK: - UIColectionViewDataSource, UICollectionViewDelegateFlowLayout
 
-extension TrackersViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+extension TrackersViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate {
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return visibleCategories.count
@@ -311,6 +328,19 @@ extension TrackersViewController: UICollectionViewDataSource, UICollectionViewDe
         let cellWidth = availableWidth / 2
         return CGSize(width: cellWidth, height: 148)
     }
+    
+    private func presentEditScreen() {
+        
+        print("Succesfull")
+    }
+
+    private func deleteTracker() {
+        print("Succesfull")
+        }
+    private func trackerAt(_ indexPath: IndexPath) -> Tracker {
+        return visibleCategories[indexPath.section].trackers[indexPath.item]
+    }
+
 }
 
 //MARK: - CreateTrackerVCDelegate
@@ -352,14 +382,17 @@ extension TrackersViewController: TrackerCellDelegate {
         collectionView.reloadItems(at: [indexPath])
         filterTrackersForSelectedDate()
     }
-}
+    func trackerCellDidRequestEdit(_ cell: TrackerCell) {
+            guard let indexPath = collectionView.indexPath(for: cell) else { return }
+            let tracker = trackerAt(indexPath)
+            presentEditScreen()
+        }
 
-//MARK: - UISearchBarDelegate
-
-extension TrackersViewController: UISearchBarDelegate {
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        searchBar.resignFirstResponder()
-    }
+        func trackerCellDidRequestDelete(_ cell: TrackerCell) {
+            guard let indexPath = collectionView.indexPath(for: cell) else { return }
+            let tracker = trackerAt(indexPath)
+            deleteTracker()
+        }
 }
 
 //MARK: - TrackerStoreDelegate
