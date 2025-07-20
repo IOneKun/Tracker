@@ -80,6 +80,25 @@ final class TrackerStore: NSObject {
             print("Ошибка при отладке трекеров: \(error)")
         }
     }
+    func deleteTracker(withId id: UUID) {
+        let fetchRequest: NSFetchRequest<TrackerCoreData> = TrackerCoreData.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        
+        do {
+            if let trackerToDelete = try context.fetch(fetchRequest).first {
+                context.delete(trackerToDelete)
+                try context.save()
+                print("Трекер удалён успешно")
+            } else {
+                print("Трекер с таким id не найден")
+            }
+        } catch {
+            print("Ошибка при удалении трекера: \(error)")
+        }
+    }
+    func trackerCoreData(with id: UUID) -> TrackerCoreData? {
+        return fetchedResultsController?.fetchedObjects?.first(where: { $0.id == id })
+    }
 }
 
 extension TrackerStore: NSFetchedResultsControllerDelegate {

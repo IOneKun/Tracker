@@ -329,14 +329,6 @@ extension TrackersViewController: UICollectionViewDataSource, UICollectionViewDe
         return CGSize(width: cellWidth, height: 148)
     }
     
-    private func presentEditScreen() {
-        
-        print("Succesfull")
-    }
-
-    private func deleteTracker() {
-        print("Succesfull")
-        }
     private func trackerAt(_ indexPath: IndexPath) -> Tracker {
         return visibleCategories[indexPath.section].trackers[indexPath.item]
     }
@@ -363,6 +355,7 @@ extension TrackersViewController: CreateTrackerViewControllerDelegate {
 //MARK: - TrackerCellDelegate
 
 extension TrackersViewController: TrackerCellDelegate {
+    
     func trackerCellDidTapComplete(_ cell: TrackerCell) {
         guard let indexPath = collectionView.indexPath(for: cell) else { return }
         let tracker = visibleCategories[indexPath.section].trackers[indexPath.item]
@@ -382,17 +375,52 @@ extension TrackersViewController: TrackerCellDelegate {
         collectionView.reloadItems(at: [indexPath])
         filterTrackersForSelectedDate()
     }
+    
     func trackerCellDidRequestEdit(_ cell: TrackerCell) {
-            guard let indexPath = collectionView.indexPath(for: cell) else { return }
-            let tracker = trackerAt(indexPath)
-            presentEditScreen()
+        guard let indexPath = collectionView.indexPath(for: cell) else { return }
+        let tracker = trackerAt(indexPath)
+
+        guard let trackerCoreData = trackerStore.trackerCoreData(with: tracker.id) else {
+            print("Не удалось найти TrackerCoreData для id: \(tracker.id)")
+            return
         }
 
-        func trackerCellDidRequestDelete(_ cell: TrackerCell) {
-            guard let indexPath = collectionView.indexPath(for: cell) else { return }
-            let tracker = trackerAt(indexPath)
-            deleteTracker()
+        let createTrackerVC = CreateTrackerViewController(
+            trackerStore: trackerStore,
+            trackerCategoryStore: trackerCategoryStore,
+            trackerToEdit: trackerCoreData
+        )
+        createTrackerVC.delegate = self
+        
+        let navController = UINavigationController(rootViewController: createTrackerVC)
+        navController.modalPresentationStyle = .pageSheet
+        present(navController, animated: true)
+    }
+
+    func trackerCellDidRequestDelete(_ cell: TrackerCell) {
+        guard let indexPath = collectionView.indexPath(for: cell) else { return }
+        let tracker = trackerAt(indexPath)
+        
+        let alert = UIAlertController(
+            title: "",
+            message: "Уверены что хотите удалить трекер?",
+            preferredStyle: .actionSheet
+        )
+        
+        let deleteAction = UIAlertAction(title: "Удалить", style: .destructive) { [weak self] _ in
+            self?.trackerStore.deleteTracker(withId: tracker.id)
+            self?.reloadTrackersFromCoreData()
+            self?.updatePlaceholderVisibility()
+            self?.collectionView.reloadData()
         }
+        let cancelAction = UIAlertAction(title: "Отменить", style: .cancel)
+        
+        alert.addAction(deleteAction)
+        alert.addAction(cancelAction)
+        
+        present(alert, animated: true)
+    }
+    
 }
 
 //MARK: - TrackerStoreDelegate
