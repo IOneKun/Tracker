@@ -21,7 +21,7 @@ final class TrackersViewController: UIViewController, TrackerRecordStoreDelegate
     private let trackerStore = TrackerStore()
     private let trackerRecordStore = TrackerRecordStore()
     private let trackerCategoryStore = TrackerCategoryStore()
-    private var selectedDate = Date()
+    var selectedDate = Date()
     private var visibleCategories: [TrackerCategory] = []
     private var isDateSelectedByUser = false
     private var currentFilter: TrackerFilter = .all
