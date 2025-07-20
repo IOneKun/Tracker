@@ -1,6 +1,16 @@
 import UIKit
 
-final class TrackersViewController: UIViewController, TrackerRecordStoreDelegate {
+final class TrackersViewController: UIViewController, TrackerRecordStoreDelegate, FiltersViewControllerDelegate {
+    func didSelectFilter(_ filter: TrackerFilter) {
+        currentFilter = filter
+        
+        if filter == .today {
+            selectedDate = Date()
+        }
+        
+        updateFilteredTrackers()
+    }
+    
     func storeDidUpdateTrackerRecords(_ store: TrackerRecordStore) {
         filterTrackersForSelectedDate()
         collectionView.reloadData()
@@ -14,12 +24,15 @@ final class TrackersViewController: UIViewController, TrackerRecordStoreDelegate
     private var selectedDate = Date()
     private var visibleCategories: [TrackerCategory] = []
     private var isDateSelectedByUser = false
+    private var currentFilter: TrackerFilter = .all
     var trackerCategories: [TrackerCategory] = []
     var completedTrackers: [TrackerRecord] = []
+    
     
     //MARK: - UI Elements
     var upperStackView: UIStackView!
     let mockImageView = UIImageView()
+    let mockImageFilter = UIImageView()
     private var collectionView: UICollectionView!
     private let labelTracker: UILabel = {
         let label = UILabel()
@@ -28,7 +41,13 @@ final class TrackersViewController: UIViewController, TrackerRecordStoreDelegate
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-    
+    private let mockEmptyLabelFilter: UILabel = {
+        let label = UILabel()
+        label.text = "Ничего не найдено"
+        label.font = .systemFont(ofSize: 12, weight: .medium)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
     private let mockEmptyLabel: UILabel = {
         let label = UILabel()
         label.text = "Что будем отслеживать?"
@@ -44,6 +63,17 @@ final class TrackersViewController: UIViewController, TrackerRecordStoreDelegate
         return searchTextField
     }()
     
+    private let filtersButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Фильтры", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = .blueDay
+        button.layer.cornerRadius = 16
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
+    
     //MARK: - Lifecycle
     
     override func viewDidLoad() {
@@ -52,7 +82,10 @@ final class TrackersViewController: UIViewController, TrackerRecordStoreDelegate
         
         setupNavBarLabelAndSearchBar()
         setupImageAndLabelOnTrackerVC()
+        setupMockImageAndLabelOnTrackerVC()
         setupCollectionView()
+        setupFiltersButton()
+        
         collectionView.dataSource = self
         collectionView.delegate = self
         
@@ -71,16 +104,11 @@ final class TrackersViewController: UIViewController, TrackerRecordStoreDelegate
         reloadTrackersFromCoreData()
         filterTrackersForSelectedDate()
         collectionView.reloadData()
-
+        
     }
     
     //MARK: - Functions
     
-    @objc private func searchTextChanged(_ sender: UISearchTextField) {
-        guard let text = sender.text else { return }
-        filterTrackers(for: text)
-    }
-
     private func filterTrackers(for searchText: String) {
         if searchText.isEmpty {
             visibleCategories = trackerCategories
@@ -122,10 +150,35 @@ final class TrackersViewController: UIViewController, TrackerRecordStoreDelegate
     }
     
     func updatePlaceholderVisibility() {
-        let hasTrackers = visibleCategories.contains { !$0.trackers.isEmpty }
-        mockImageView.isHidden = hasTrackers
-        mockEmptyLabel.isHidden = hasTrackers
+        let hasVisibleTrackers = visibleCategories.contains { !$0.trackers.isEmpty }
+        let hasAnyTrackers = trackerCategories.contains { !$0.trackers.isEmpty }
+        
+        switch currentFilter {
+        case .all, .today:
+            
+            mockImageView.isHidden = hasVisibleTrackers
+            mockEmptyLabel.isHidden = hasVisibleTrackers
+            mockImageFilter.isHidden = true
+            mockEmptyLabelFilter.isHidden = true
+            
+        case .completed, .notCompleted:
+            if !hasAnyTrackers {
+                mockImageView.isHidden = false
+                mockEmptyLabel.isHidden = false
+                mockImageFilter.isHidden = true
+                mockEmptyLabelFilter.isHidden = true
+            } else {
+                mockImageView.isHidden = true
+                mockEmptyLabel.isHidden = true
+                mockImageFilter.isHidden = hasVisibleTrackers
+                mockEmptyLabelFilter.isHidden = hasVisibleTrackers
+            }
+        }
+        
+        filtersButton.isHidden = !hasAnyTrackers
     }
+    
+    
     func isFutureDate(_ date: Date) -> Bool {
         return Calendar.current.startOfDay(for: date) > Calendar.current.startOfDay(for: Date())
     }
@@ -137,10 +190,23 @@ final class TrackersViewController: UIViewController, TrackerRecordStoreDelegate
         navController.modalPresentationStyle = .pageSheet
         present(navController, animated: true)
     }
+    
     @objc private func dateChanged(_ sender: UIDatePicker) {
         selectedDate = sender.date
         isDateSelectedByUser = true
-        filterTrackersForSelectedDate()
+        updateFilteredTrackers()
+    }
+    
+    @objc private func filterButtonTapped() {
+        let filtersVC = FiltersViewController(selectedFilter: currentFilter)
+        filtersVC.delegate = self
+        let navVC = UINavigationController(rootViewController: filtersVC)
+        present(navVC, animated: true)
+    }
+    
+    @objc private func searchTextChanged(_ sender: UISearchTextField) {
+        guard let text = sender.text else { return }
+        filterTrackers(for: text)
     }
     func reloadTrackersFromCoreData() {
         do {
@@ -181,6 +247,40 @@ final class TrackersViewController: UIViewController, TrackerRecordStoreDelegate
         updatePlaceholderVisibility()
         visibleCategories = trackerCategories
     }
+    
+    func updateFilteredTrackers() {
+        var filteredCategories: [TrackerCategory] = []
+        
+        for category in trackerCategories {
+            let filteredTrackers = category.trackers.filter { tracker in
+                let isCompleted = trackerRecordStore.isTrackerCompleted(tracker.id, on: selectedDate)
+                let isToday = tracker.schedule.contains {
+                    let weekday = Calendar.current.component(.weekday, from: selectedDate)
+                    return $0.rawValue == (weekday + 5) % 7
+                }
+                
+                switch currentFilter {
+                case .all:
+                    return true
+                case .today:
+                    return isToday
+                case .completed:
+                    return isCompleted
+                case .notCompleted:
+                    return !isCompleted
+                }
+            }
+            
+            if !filteredTrackers.isEmpty {
+                filteredCategories.append(TrackerCategory(name: category.name, trackers: filteredTrackers))
+            }
+        }
+        
+        visibleCategories = filteredCategories
+        collectionView.reloadData()
+        updatePlaceholderVisibility()
+    }
+    
     
     //MARK: - Layout
     
@@ -242,6 +342,8 @@ final class TrackersViewController: UIViewController, TrackerRecordStoreDelegate
         ])
         view.bringSubviewToFront(mockImageView)
         view.bringSubviewToFront(mockEmptyLabel)
+        view.bringSubviewToFront(mockImageFilter)
+        view.bringSubviewToFront(mockEmptyLabelFilter)
     }
     
     private func setupTapToHideKeyboard() {
@@ -271,6 +373,38 @@ final class TrackersViewController: UIViewController, TrackerRecordStoreDelegate
             mockEmptyLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             mockEmptyLabel.topAnchor.constraint(equalTo: mockImageView.bottomAnchor, constant: 8)
         ])
+    }
+    
+    func setupMockImageAndLabelOnTrackerVC() {
+        let image = UIImage(named: "error_emoji")
+        mockImageFilter.image = image
+        mockImageFilter.contentMode = .scaleAspectFit
+        view.addSubview(mockImageFilter)
+        mockImageFilter.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            mockImageFilter.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            mockImageFilter.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+        ])
+        
+        view.addSubview(mockEmptyLabelFilter)
+        NSLayoutConstraint.activate([
+            mockEmptyLabelFilter.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            mockEmptyLabelFilter.topAnchor.constraint(equalTo: mockImageFilter.bottomAnchor, constant: 8)
+        ])
+    }
+    private func setupFiltersButton() {
+        view.addSubview(filtersButton)
+        filtersButton.addTarget(self, action: #selector(filterButtonTapped), for: .touchUpInside)
+        
+        NSLayoutConstraint.activate([
+            filtersButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            filtersButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
+            filtersButton.widthAnchor.constraint(equalToConstant: 114),
+            filtersButton.heightAnchor.constraint(equalToConstant: 50)
+        ])
+        
+        collectionView.contentInset.bottom = 80
     }
 }
 
@@ -332,7 +466,6 @@ extension TrackersViewController: UICollectionViewDataSource, UICollectionViewDe
     private func trackerAt(_ indexPath: IndexPath) -> Tracker {
         return visibleCategories[indexPath.section].trackers[indexPath.item]
     }
-
 }
 
 //MARK: - CreateTrackerVCDelegate
@@ -379,12 +512,12 @@ extension TrackersViewController: TrackerCellDelegate {
     func trackerCellDidRequestEdit(_ cell: TrackerCell) {
         guard let indexPath = collectionView.indexPath(for: cell) else { return }
         let tracker = trackerAt(indexPath)
-
+        
         guard let trackerCoreData = trackerStore.trackerCoreData(with: tracker.id) else {
             print("Не удалось найти TrackerCoreData для id: \(tracker.id)")
             return
         }
-
+        
         let createTrackerVC = CreateTrackerViewController(
             trackerStore: trackerStore,
             trackerCategoryStore: trackerCategoryStore,
@@ -396,7 +529,7 @@ extension TrackersViewController: TrackerCellDelegate {
         navController.modalPresentationStyle = .pageSheet
         present(navController, animated: true)
     }
-
+    
     func trackerCellDidRequestDelete(_ cell: TrackerCell) {
         guard let indexPath = collectionView.indexPath(for: cell) else { return }
         let tracker = trackerAt(indexPath)
@@ -420,7 +553,6 @@ extension TrackersViewController: TrackerCellDelegate {
         
         present(alert, animated: true)
     }
-    
 }
 
 //MARK: - TrackerStoreDelegate
