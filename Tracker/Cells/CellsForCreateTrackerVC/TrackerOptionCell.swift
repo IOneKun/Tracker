@@ -23,7 +23,7 @@ final class TrackerOptionCell: UITableViewCell {
         
         optionNameLabel.font = UIFont.systemFont(ofSize: 17)
         selectedValueLabel.font = UIFont.systemFont(ofSize: 15)
-        selectedValueLabel.textColor = .gray
+        selectedValueLabel.textColor = .blackDay
         selectedValueLabel.numberOfLines = 1
         
         chevronImageView.tintColor = .grayDay2

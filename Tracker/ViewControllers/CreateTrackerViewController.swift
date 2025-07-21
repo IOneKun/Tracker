@@ -10,6 +10,7 @@ final class CreateTrackerViewController: UIViewController {
     
     weak var delegate: CreateTrackerViewControllerDelegate?
     
+    let color = Color()
     let trackerStore: TrackerStore
     let trackerCategoryStore: TrackerCategoryStore
     
@@ -57,6 +58,7 @@ final class CreateTrackerViewController: UIViewController {
         table.dataSource = self
         table.register(TrackerOptionCell.self, forCellReuseIdentifier: TrackerOptionCell.reuseIdentifier)
         table.separatorStyle = .singleLine
+        table.separatorColor = .lightGray
         table.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         table.isScrollEnabled = false
         
@@ -130,7 +132,7 @@ final class CreateTrackerViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = color.viewBackgroundColor
         title = "Новая привычка"
         setupLayout()
         buttonsView.createButton.addTarget(self, action: #selector(createTrackerButtonTapped), for: .touchUpInside)
@@ -203,7 +205,6 @@ final class CreateTrackerViewController: UIViewController {
         ])
         
         colorLabelContainer.heightAnchor.constraint(equalToConstant: 18).isActive = true
-        
         
         view.addSubview(scrollView)
         view.addSubview(buttonsView)
@@ -294,7 +295,7 @@ final class CreateTrackerViewController: UIViewController {
     }
     
     @objc private func cancelButtonTapped() {
-        dismiss(animated: true)
+        view.window?.rootViewController?.dismiss(animated: true, completion: nil)
     }
     
     private func updateCreateButtonState() {

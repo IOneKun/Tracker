@@ -1,9 +1,11 @@
 import UIKit
 
 final class MainTabBarViewController: UITabBarController {
-    
+    let color = Color() 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        view.backgroundColor = .whiteDay
         
         let trackersVC = UINavigationController(rootViewController: TrackersViewController())
         trackersVC.tabBarItem = UITabBarItem(title: "Трекеры",
@@ -21,7 +23,7 @@ final class MainTabBarViewController: UITabBarController {
         if #available(iOS 15.0, *) {
             let tabBarAppearance = UITabBarAppearance()
             tabBarAppearance.configureWithOpaqueBackground() 
-            tabBarAppearance.backgroundColor = .white
+            tabBarAppearance.backgroundColor = color.viewBackgroundColor
             
             tabBar.standardAppearance = tabBarAppearance
             tabBar.scrollEdgeAppearance = tabBarAppearance

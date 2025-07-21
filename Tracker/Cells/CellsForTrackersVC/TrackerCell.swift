@@ -12,6 +12,8 @@ final class TrackerCell: UICollectionViewCell {
     
     // MARK: - UI Elements
     
+    let color = Color()
+    
     private let coloredBackgroundView: UIView = {
         let view = UIView()
         view.layer.cornerRadius = 16
@@ -35,9 +37,9 @@ final class TrackerCell: UICollectionViewCell {
         return label
     }()
     
-    private let bottomPanel: UIView = {
+    private lazy var bottomPanel: UIView = {
         let view = UIView()
-        view.backgroundColor = .white
+        view.backgroundColor = color.viewBackgroundColor
         view.layer.cornerRadius = 16
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
@@ -46,7 +48,7 @@ final class TrackerCell: UICollectionViewCell {
     private let daysLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 12, weight: .medium)
-        label.textColor = .black
+        label.textColor = .blackDay
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()

@@ -27,6 +27,7 @@ final class TrackersViewController: UIViewController, TrackerRecordStoreDelegate
     private var currentFilter: TrackerFilter = .all
     var trackerCategories: [TrackerCategory] = []
     var completedTrackers: [TrackerRecord] = []
+    private let color = Color()
     
     
     //MARK: - UI Elements
@@ -78,7 +79,7 @@ final class TrackersViewController: UIViewController, TrackerRecordStoreDelegate
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = color.viewBackgroundColor
         
         setupNavBarLabelAndSearchBar()
         setupImageAndLabelOnTrackerVC()
@@ -327,7 +328,7 @@ final class TrackersViewController: UIViewController, TrackerRecordStoreDelegate
         
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
-        collectionView.backgroundColor = .white
+        collectionView.backgroundColor = UIColor.systemBackground
         
         collectionView.register(TrackerCell.self, forCellWithReuseIdentifier: TrackerCell.identifier)
         collectionView.register(CategoryHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: CategoryHeaderView.identifier)

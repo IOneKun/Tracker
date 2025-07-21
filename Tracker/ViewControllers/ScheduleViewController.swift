@@ -29,8 +29,8 @@ final class ScheduleViewController: UIViewController {
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Готово", for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
-        button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = .black
+        button.setTitleColor(.whiteDay, for: .normal)
+        button.backgroundColor = .blackDay
         button.layer.cornerRadius = 16
         return button
     }()
@@ -40,7 +40,7 @@ final class ScheduleViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Расписание"
-        view.backgroundColor = .white
+        view.backgroundColor = .whiteDay
         setupLayout()
         tableView.delegate = self
         tableView.dataSource = self
