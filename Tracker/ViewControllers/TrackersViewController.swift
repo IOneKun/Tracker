@@ -1,4 +1,5 @@
 import UIKit
+import AppMetricaCore
 
 final class TrackersViewController: UIViewController, TrackerRecordStoreDelegate, FiltersViewControllerDelegate {
     func didSelectFilter(_ filter: TrackerFilter) {
@@ -108,6 +109,17 @@ final class TrackersViewController: UIViewController, TrackerRecordStoreDelegate
         
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        AnalyticsService.shared.report(.open(screen: "Main"))
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        AnalyticsService.shared.report(.close(screen: "Main"))
+    }
+
+    
     //MARK: - Functions
     
     private func filterTrackers(for searchText: String) {
@@ -185,6 +197,7 @@ final class TrackersViewController: UIViewController, TrackerRecordStoreDelegate
     }
     
     @objc func addTrackerButtonTapped() {
+        AnalyticsService.shared.report(.click(screen: "Main", item: "add_track"))
         let trackerTypeVC = TrackerTypeViewController(trackerStore: trackerStore, trackerCategoryStore: trackerCategoryStore)
         trackerTypeVC.delegate = self
         let navController = UINavigationController(rootViewController: trackerTypeVC)
@@ -199,6 +212,7 @@ final class TrackersViewController: UIViewController, TrackerRecordStoreDelegate
     }
     
     @objc private func filterButtonTapped() {
+        AnalyticsService.shared.report(.click(screen: "Main", item: "filter"))
         let filtersVC = FiltersViewController(selectedFilter: currentFilter)
         filtersVC.delegate = self
         let navVC = UINavigationController(rootViewController: filtersVC)
@@ -491,6 +505,9 @@ extension TrackersViewController: CreateTrackerViewControllerDelegate {
 extension TrackersViewController: TrackerCellDelegate {
     
     func trackerCellDidTapComplete(_ cell: TrackerCell) {
+        
+        AnalyticsService.shared.report(.click(screen: "Main", item: "track"))
+        
         guard let indexPath = collectionView.indexPath(for: cell) else { return }
         let tracker = visibleCategories[indexPath.section].trackers[indexPath.item]
         
@@ -511,6 +528,7 @@ extension TrackersViewController: TrackerCellDelegate {
     }
     
     func trackerCellDidRequestEdit(_ cell: TrackerCell) {
+        AnalyticsService.shared.report(.click(screen: "Main", item: "edit"))
         guard let indexPath = collectionView.indexPath(for: cell) else { return }
         let tracker = trackerAt(indexPath)
         
@@ -532,6 +550,9 @@ extension TrackersViewController: TrackerCellDelegate {
     }
     
     func trackerCellDidRequestDelete(_ cell: TrackerCell) {
+        
+        AnalyticsService.shared.report(.click(screen: "Main", item: "delete"))
+        
         guard let indexPath = collectionView.indexPath(for: cell) else { return }
         let tracker = trackerAt(indexPath)
         
