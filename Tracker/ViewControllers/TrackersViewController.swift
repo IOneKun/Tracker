@@ -38,7 +38,7 @@ final class TrackersViewController: UIViewController, TrackerRecordStoreDelegate
     private var collectionView: UICollectionView!
     private let labelTracker: UILabel = {
         let label = UILabel()
-        label.text = "Трекеры"
+        label.text = NSLocalizedString("tracker_title", comment: "Title for main trackers screen")
         label.font = .systemFont(ofSize: 34, weight: .bold)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -67,7 +67,8 @@ final class TrackersViewController: UIViewController, TrackerRecordStoreDelegate
     
     private let filtersButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Фильтры", for: .normal)
+        let title = NSLocalizedString("filters_button", comment:"")
+        button.setTitle(title, for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.backgroundColor = .blueDay
         button.layer.cornerRadius = 16

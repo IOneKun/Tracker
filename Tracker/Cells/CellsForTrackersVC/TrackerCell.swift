@@ -89,36 +89,55 @@ final class TrackerCell: UICollectionViewCell {
     }
     
     func configure(with tracker: Tracker, completedDays: Int, isCompleted: Bool) {
+        
         emojiLabel.text = tracker.emoji
         titleLabel.text = tracker.name
-        if completedDays % 100 >= 11 && completedDays % 100 <= 14 {
-            daysLabel.text = "\(completedDays) дней"
-        } else {
-            switch completedDays % 10 {
-            case 1:
-                daysLabel.text = "\(completedDays) день"
-            case 2, 3, 4:
-                daysLabel.text = "\(completedDays) дня"
-            default:
-                daysLabel.text = "\(completedDays) дней"
-            }
-        }
+        
         coloredBackgroundView.backgroundColor = tracker.color
-        coloredBackgroundView.isUserInteractionEnabled = true
+        
+        let dayWord = localizedDayString(for: completedDays)
+        daysLabel.text = "\(completedDays) \(dayWord)"
         
         if isCompleted {
-            
             let image = UIImage(named: "done_button")?.withRenderingMode(.alwaysOriginal)
             plusButton.setImage(image, for: .normal)
             plusButton.tintColor = nil
             plusButton.backgroundColor = .clear
         } else {
-            
             let image = UIImage(named: "custom_plus_button")?.withRenderingMode(.alwaysTemplate)
             plusButton.setImage(image, for: .normal)
             plusButton.tintColor = tracker.color
+            plusButton.backgroundColor = .clear
         }
     }
+    
+    func localizedDayString(for count: Int) -> String {
+        let languageCode = Locale.current.languageCode ?? "en"
+        
+        if languageCode == "ru" {
+            let leftFrom100 = count % 100
+            let leftFrom10 = count % 10
+            
+            if leftFrom100 >= 11 && leftFrom100 <= 14 {
+                return NSLocalizedString("day_many", comment: "")
+            }
+            
+            switch leftFrom10 {
+            case 1:
+                return NSLocalizedString("day_singular", comment: "")
+            case 2, 3, 4:
+                return NSLocalizedString("day_few", comment: "")
+            default:
+                return NSLocalizedString("day_many", comment: "")
+            }
+        } else {
+            
+            return count == 1
+            ? NSLocalizedString("day_singular", comment: "")
+            : NSLocalizedString("day_many", comment: "")
+        }
+    }
+    
     
     // MARK: - Layout
     

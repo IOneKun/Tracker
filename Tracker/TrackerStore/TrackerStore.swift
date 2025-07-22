@@ -112,8 +112,7 @@ final class TrackerStore: NSObject {
                 let name = coreData.name,
                 let emoji = coreData.emoji,
                 let colorHex = coreData.color,
-                let scheduleSet = coreData.schedule as? Set<NSNumber>,
-                let category = coreData.category?.name
+                let scheduleSet = coreData.schedule as? Set<NSNumber>
             else {
                 continue
             }

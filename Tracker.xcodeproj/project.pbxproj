@@ -12,6 +12,7 @@
 		6F06EF252E2E7E1800AFC7D6 /* AppMetricaCrashes in Frameworks */ = {isa = PBXBuildFile; productRef = 6F06EF242E2E7E1800AFC7D6 /* AppMetricaCrashes */; };
 		6F06EF272E2E7E1800AFC7D6 /* AppMetricaLibraryAdapter in Frameworks */ = {isa = PBXBuildFile; productRef = 6F06EF262E2E7E1800AFC7D6 /* AppMetricaLibraryAdapter */; };
 		6F06EF292E2E7E1800AFC7D6 /* AppMetricaScreenshot in Frameworks */ = {isa = PBXBuildFile; productRef = 6F06EF282E2E7E1800AFC7D6 /* AppMetricaScreenshot */; };
+		6F06EFBC2E2F86DE00AFC7D6 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6F06EFBA2E2F86DE00AFC7D6 /* Localizable.strings */; };
 		6F4C8CFE2E2D8301009FAD5A /* InlineSnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = 6F4C8CFD2E2D8301009FAD5A /* InlineSnapshotTesting */; };
 		6F4C8D002E2D8301009FAD5A /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = 6F4C8CFF2E2D8301009FAD5A /* SnapshotTesting */; };
 		6F4C8D022E2D8301009FAD5A /* SnapshotTestingCustomDump in Frameworks */ = {isa = PBXBuildFile; productRef = 6F4C8D012E2D8301009FAD5A /* SnapshotTestingCustomDump */; };
@@ -35,6 +36,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		6F06EFBB2E2F86DE00AFC7D6 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		6F06EFBE2E2F877A00AFC7D6 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 		6F7362262DDEE372000364CD /* Tracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6F73623C2DDEE374000364CD /* TrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TrackerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6F7362462DDEE374000364CD /* TrackerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TrackerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -65,11 +68,6 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		6F06EFA52E2F7F2600AFC7D6 /* Localisable */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Localisable;
-			sourceTree = "<group>";
-		};
 		6F7362282DDEE372000364CD /* Tracker */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -130,7 +128,7 @@
 		6F73621D2DDEE372000364CD = {
 			isa = PBXGroup;
 			children = (
-				6F06EFA52E2F7F2600AFC7D6 /* Localisable */,
+				6F06EFBA2E2F86DE00AFC7D6 /* Localizable.strings */,
 				6F7362282DDEE372000364CD /* Tracker */,
 				6F73623F2DDEE374000364CD /* TrackerTests */,
 				6F7362492DDEE374000364CD /* TrackerUITests */,
@@ -164,7 +162,6 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				6F06EFA52E2F7F2600AFC7D6 /* Localisable */,
 				6F7362282DDEE372000364CD /* Tracker */,
 			);
 			name = Tracker;
@@ -257,6 +254,8 @@
 			knownRegions = (
 				en,
 				Base,
+				ru,
+				"en-GB",
 			);
 			mainGroup = 6F73621D2DDEE372000364CD;
 			minimizedProjectReferenceProxies = 1;
@@ -281,6 +280,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6F06EFBC2E2F86DE00AFC7D6 /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -336,6 +336,18 @@
 			targetProxy = 6F7362472DDEE374000364CD /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		6F06EFBA2E2F86DE00AFC7D6 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				6F06EFBB2E2F86DE00AFC7D6 /* en */,
+				6F06EFBE2E2F877A00AFC7D6 /* ru */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		6F7362502DDEE374000364CD /* Debug */ = {
@@ -401,6 +413,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -465,6 +478,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
