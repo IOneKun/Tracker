@@ -99,6 +99,45 @@ final class TrackerStore: NSObject {
     func trackerCoreData(with id: UUID) -> TrackerCoreData? {
         return fetchedResultsController?.fetchedObjects?.first(where: { $0.id == id })
     }
+    func allTrackers() -> [Tracker] {
+        guard let objects = fetchedResultsController?.fetchedObjects else {
+            return []
+        }
+
+        var trackers: [Tracker] = []
+
+        for coreData in objects {
+            guard
+                let id = coreData.id,
+                let name = coreData.name,
+                let emoji = coreData.emoji,
+                let colorHex = coreData.color,
+                let scheduleSet = coreData.schedule as? Set<NSNumber>,
+                let category = coreData.category?.name
+            else {
+                continue
+            }
+
+            guard let color = UIColor.fromHex(colorHex) else {
+                continue
+            }
+            
+            let schedule = scheduleSet.compactMap { Weekday(rawValue: $0.intValue) }
+
+            let tracker = Tracker(
+                id: id,
+                name: name,
+                emoji: emoji,
+                color: color,
+                schedule: schedule
+            )
+
+            trackers.append(tracker)
+        }
+
+        return trackers
+    }
+
 }
 
 extension TrackerStore: NSFetchedResultsControllerDelegate {

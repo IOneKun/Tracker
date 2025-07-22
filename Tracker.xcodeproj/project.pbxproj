@@ -65,6 +65,11 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		6F06EFA52E2F7F2600AFC7D6 /* Localisable */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Localisable;
+			sourceTree = "<group>";
+		};
 		6F7362282DDEE372000364CD /* Tracker */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -125,6 +130,7 @@
 		6F73621D2DDEE372000364CD = {
 			isa = PBXGroup;
 			children = (
+				6F06EFA52E2F7F2600AFC7D6 /* Localisable */,
 				6F7362282DDEE372000364CD /* Tracker */,
 				6F73623F2DDEE374000364CD /* TrackerTests */,
 				6F7362492DDEE374000364CD /* TrackerUITests */,
@@ -158,6 +164,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				6F06EFA52E2F7F2600AFC7D6 /* Localisable */,
 				6F7362282DDEE372000364CD /* Tracker */,
 			);
 			name = Tracker;
