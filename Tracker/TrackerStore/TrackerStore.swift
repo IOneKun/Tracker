@@ -80,6 +80,63 @@ final class TrackerStore: NSObject {
             print("Ошибка при отладке трекеров: \(error)")
         }
     }
+    func deleteTracker(withId id: UUID) {
+        let fetchRequest: NSFetchRequest<TrackerCoreData> = TrackerCoreData.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        
+        do {
+            if let trackerToDelete = try context.fetch(fetchRequest).first {
+                context.delete(trackerToDelete)
+                try context.save()
+                print("Трекер удалён успешно")
+            } else {
+                print("Трекер с таким id не найден")
+            }
+        } catch {
+            print("Ошибка при удалении трекера: \(error)")
+        }
+    }
+    func trackerCoreData(with id: UUID) -> TrackerCoreData? {
+        return fetchedResultsController?.fetchedObjects?.first(where: { $0.id == id })
+    }
+    func allTrackers() -> [Tracker] {
+        guard let objects = fetchedResultsController?.fetchedObjects else {
+            return []
+        }
+        
+        var trackers: [Tracker] = []
+        
+        for coreData in objects {
+            guard
+                let id = coreData.id,
+                let name = coreData.name,
+                let emoji = coreData.emoji,
+                let colorHex = coreData.color,
+                let scheduleSet = coreData.schedule as? Set<NSNumber>
+            else {
+                continue
+            }
+            
+            guard let color = UIColor.fromHex(colorHex) else {
+                continue
+            }
+            
+            let schedule = scheduleSet.compactMap { Weekday(rawValue: $0.intValue) }
+            
+            let tracker = Tracker(
+                id: id,
+                name: name,
+                emoji: emoji,
+                color: color,
+                schedule: schedule
+            )
+            
+            trackers.append(tracker)
+        }
+        
+        return trackers
+    }
+    
 }
 
 extension TrackerStore: NSFetchedResultsControllerDelegate {

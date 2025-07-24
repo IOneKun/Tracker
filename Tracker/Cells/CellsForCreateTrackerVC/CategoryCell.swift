@@ -25,7 +25,7 @@ final class CategoryCell: UITableViewCell {
         nameLabel.textColor = .label
         
         checkmarkImageView.image = UIImage(systemName: "checkmark")
-        checkmarkImageView.tintColor = .blue
+        checkmarkImageView.tintColor = .blueDay 
         checkmarkImageView.isHidden = true
         checkmarkImageView.setContentHuggingPriority(.required, for: .horizontal)
         

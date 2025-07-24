@@ -77,6 +77,21 @@ final class TrackerRecordStore: NSObject {
             }
         }
     }
+    func allRecords() -> [TrackerRecord] {
+        let fetchRequest: NSFetchRequest<TrackerRecordCoreData> = TrackerRecordCoreData.fetchRequest()
+
+        do {
+            let objects = try context.fetch(fetchRequest)
+            return objects.compactMap { object in
+                guard let trackerID = object.trackerID,
+                      let date = object.date else { return nil }
+                return TrackerRecord(trackerID: trackerID, date: date)
+            }
+        } catch {
+            print("Failed to fetch all records: \(error)")
+            return []
+        }
+    }
 }
 extension TrackerRecordStore: NSFetchedResultsControllerDelegate {
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {

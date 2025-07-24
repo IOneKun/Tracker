@@ -1,0 +1,7 @@
+tracker_title = "Трекеры";
+filters_button = "Фильтры";
+tab_tracker = "Трекеры";
+tab_statistic = "Статистика";
+day_singular = "день";
+day_few = "дня";
+day_many = "дней";

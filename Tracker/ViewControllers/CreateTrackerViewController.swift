@@ -10,8 +10,14 @@ final class CreateTrackerViewController: UIViewController {
     
     weak var delegate: CreateTrackerViewControllerDelegate?
     
+    let color = Color()
     let trackerStore: TrackerStore
     let trackerCategoryStore: TrackerCategoryStore
+    
+    var trackerToEdit: TrackerCoreData?
+    var isEditingTracker: Bool {
+        return trackerToEdit != nil
+    }
     
     var trackerType: TrackerType = .habit
     private var selectedCategory: String?
@@ -30,9 +36,10 @@ final class CreateTrackerViewController: UIViewController {
     
     //MARK: - Init
     
-    init (trackerStore: TrackerStore, trackerCategoryStore: TrackerCategoryStore) {
+    init (trackerStore: TrackerStore, trackerCategoryStore: TrackerCategoryStore, trackerToEdit: TrackerCoreData? = nil) {
         self.trackerStore = trackerStore
         self.trackerCategoryStore = trackerCategoryStore
+        self.trackerToEdit = trackerToEdit
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -51,6 +58,7 @@ final class CreateTrackerViewController: UIViewController {
         table.dataSource = self
         table.register(TrackerOptionCell.self, forCellReuseIdentifier: TrackerOptionCell.reuseIdentifier)
         table.separatorStyle = .singleLine
+        table.separatorColor = .lightGray
         table.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         table.isScrollEnabled = false
         
@@ -124,7 +132,7 @@ final class CreateTrackerViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = color.viewBackgroundColor
         title = "Новая привычка"
         setupLayout()
         buttonsView.createButton.addTarget(self, action: #selector(createTrackerButtonTapped), for: .touchUpInside)
@@ -132,9 +140,48 @@ final class CreateTrackerViewController: UIViewController {
                                             #selector(cancelButtonTapped), for: .touchUpInside)
         textFieldView.textField.addTarget(self, action: #selector(titleTextFieldChanged), for: .editingChanged)
         setupTapToHideKeyboard()
+        
+        title = trackerToEdit == nil ? "Новая привычка" : "Редактирование"
+        if let trackerToEdit = trackerToEdit {
+            populateFields(with: trackerToEdit)
+        }
+        if isEditingTracker {
+            buttonsView.createButton.setTitle("Сохранить", for: .normal)
+            title = "Редактирование"
+        } else {
+            buttonsView.createButton.setTitle("Создать", for: .normal)
+            title = "Новая привычка"
+        }
     }
     
     //MARK: - Functions
+    
+    private func populateFields(with tracker: TrackerCoreData) {
+        textFieldView.textField.text = tracker.name
+        title = "Редактирование"
+        
+        if let emoji = tracker.emoji, let index = emojis.firstIndex(of: emoji) {
+            selectedEmojiIndex = IndexPath(item: index, section: 0)
+        }
+        
+        if let hexColor = tracker.color,
+           let color = UIColor.fromHex(hexColor),
+           let index = colors.firstIndex(where: { $0.toHexString == color.toHexString }) {
+            selectedColorIndex = IndexPath(item: index, section: 0)
+        }
+        
+        selectedCategory = tracker.category?.name
+        
+        if let daySet = tracker.schedule as? Set<NSNumber> {
+            selectedSchedule = daySet.compactMap { Weekday(rawValue: $0.intValue) }
+        }
+        
+        emojiCollectionView.reloadData()
+        colorCollectionView.reloadData()
+        optionsTableView.reloadData()
+        updateCreateButtonState()
+    }
+    
     
     private func setupLayout() {
         let emojiLabelContainer = UIView()
@@ -158,7 +205,6 @@ final class CreateTrackerViewController: UIViewController {
         ])
         
         colorLabelContainer.heightAnchor.constraint(equalToConstant: 18).isActive = true
-        
         
         view.addSubview(scrollView)
         view.addSubview(buttonsView)
@@ -210,24 +256,46 @@ final class CreateTrackerViewController: UIViewController {
             return
         }
         
-        let tracker = Tracker(
-            id: UUID(),
-            name: title,
-            emoji: emojis[emojiIndex.item],
-            color: colors[colorIndex.item],
-            schedule: selectedSchedule
-        )
         guard let selectedCategory = selectedCategory else {
             showAlert(message: "Выберите категорию")
             return
         }
-        try? trackerStore.addTracker(id: tracker.id, name: title, emoji: emojis[emojiIndex.item], color: colors[colorIndex.item], schedule: selectedSchedule, category: selectedCategory)
+        
+        if let editingTracker = trackerToEdit {
+            editingTracker.name = title
+            editingTracker.emoji = emojis[emojiIndex.item]
+            editingTracker.color = colors[colorIndex.item].toHexString
+            
+            if let categoryCoreData = trackerCategoryStore.fetchCategory(selectedCategory) {
+                editingTracker.category = categoryCoreData
+            }
+            
+            editingTracker.schedule = NSSet(array: selectedSchedule.map { NSNumber(value: $0.rawValue) })
+            
+            do {
+                try trackerStore.context.save()
+            } catch {
+                print("Ошибка при сохранении изменений: \(error)")
+                showAlert(message: "Не удалось сохранить изменения")
+                return
+            }
+            dismiss(animated: true)
+        } else {
+            let newTrackerId = UUID()
+            try? trackerStore.addTracker(
+                id: newTrackerId,
+                name: title,
+                emoji: emojis[emojiIndex.item],
+                color: colors[colorIndex.item],
+                schedule: selectedSchedule,
+                category: selectedCategory
+            )
+        }
         presentingViewController?.presentingViewController?.dismiss(animated: true)
     }
     
-    
     @objc private func cancelButtonTapped() {
-        presentingViewController?.presentingViewController?.dismiss(animated: true)
+        view.window?.rootViewController?.dismiss(animated: true, completion: nil)
     }
     
     private func updateCreateButtonState() {
@@ -255,7 +323,6 @@ final class CreateTrackerViewController: UIViewController {
     @objc private func titleTextFieldChanged() {
         updateCreateButtonState()
     }
-    
     
     private func showAlert(message: String) {
         let alert = UIAlertController(title: nil, message: message, preferredStyle: .alert)

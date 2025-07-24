@@ -5,13 +5,14 @@ final class TrackerTypeViewController: UIViewController {
     weak var delegate: CreateTrackerViewControllerDelegate?
     private let trackerStore: TrackerStore
     private let trackerCategoryStore: TrackerCategoryStore
+    let color = Color()
     
     //MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .white
+        view.backgroundColor = color.viewBackgroundColor
         title = "Создание трекера"
         setupUITrackerTypeVC()
     }
@@ -63,7 +64,7 @@ final class TrackerTypeViewController: UIViewController {
         
         let habitButton = UIButton(type: .system)
         habitButton.backgroundColor = UIColor(named: "blackDay")
-        habitButton.tintColor = .white
+        habitButton.tintColor = UIColor(named: "whiteDay")
         habitButton.setTitle(NSLocalizedString("Привычка", comment: ""), for: .normal)
         habitButton.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         habitButton.layer.cornerRadius = 16
@@ -81,7 +82,7 @@ final class TrackerTypeViewController: UIViewController {
         
         let irregularButton = UIButton(type: .system)
         irregularButton.backgroundColor = UIColor(named: "blackDay")
-        irregularButton.tintColor = .white
+        irregularButton.tintColor = UIColor(named: "whiteDay")
         irregularButton.setTitle(NSLocalizedString("Нерегулярное событие", comment: ""), for: .normal)
         irregularButton.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         irregularButton.layer.cornerRadius = 16
