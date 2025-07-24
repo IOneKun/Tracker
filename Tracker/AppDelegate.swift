@@ -23,8 +23,18 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     ) -> Bool {
         DaysValueTransformer.register()
         
-        let configuration = AppMetricaConfiguration(apiKey: "b3247476-ff2a-4d18-897d-d7bc7c47086d")
-        AppMetrica.activate(with: configuration!)
+        let apiKey = "b3247476-ff2a-4d18-897d-d7bc7c47086d"
+        guard !apiKey.isEmpty else {
+            print("AppMetrica API key is empty")
+            return false
+        }
+        
+        guard let configuration = AppMetricaConfiguration(apiKey: apiKey) else {
+            print("Failed to create AppMetrica configuration")
+            return false
+        }
+        
+        AppMetrica.activate(with: configuration)
         print("AppMetrica activated")
         
         return true
@@ -37,11 +47,4 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     ) -> UISceneConfiguration {
         return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
     }
-    
-    func application(
-        _ application: UIApplication,
-        didDiscardSceneSessions sceneSessions: Set<UISceneSession>
-    ) {
-    }
 }
-

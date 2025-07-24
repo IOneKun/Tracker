@@ -103,9 +103,9 @@ final class TrackerStore: NSObject {
         guard let objects = fetchedResultsController?.fetchedObjects else {
             return []
         }
-
+        
         var trackers: [Tracker] = []
-
+        
         for coreData in objects {
             guard
                 let id = coreData.id,
@@ -116,13 +116,13 @@ final class TrackerStore: NSObject {
             else {
                 continue
             }
-
+            
             guard let color = UIColor.fromHex(colorHex) else {
                 continue
             }
             
             let schedule = scheduleSet.compactMap { Weekday(rawValue: $0.intValue) }
-
+            
             let tracker = Tracker(
                 id: id,
                 name: name,
@@ -130,13 +130,13 @@ final class TrackerStore: NSObject {
                 color: color,
                 schedule: schedule
             )
-
+            
             trackers.append(tracker)
         }
-
+        
         return trackers
     }
-
+    
 }
 
 extension TrackerStore: NSFetchedResultsControllerDelegate {

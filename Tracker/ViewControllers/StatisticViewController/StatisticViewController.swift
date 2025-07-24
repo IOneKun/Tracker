@@ -1,6 +1,6 @@
 import UIKit
 
-class StatisticViewController: UIViewController {
+final class StatisticViewController: UIViewController {
     
     //MARK: - Variables
     
@@ -25,17 +25,17 @@ class StatisticViewController: UIViewController {
     }()
     
     private lazy var collectionView: UICollectionView = {
-            let layout = UICollectionViewFlowLayout()
-            layout.minimumLineSpacing = 16
-            layout.itemSize = CGSize(width: view.bounds.width - 32, height: 90)
-
-            let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
-            cv.translatesAutoresizingMaskIntoConstraints = false
-            cv.dataSource = self
-            cv.backgroundColor = .systemBackground
-            cv.register(StatisticsCell.self, forCellWithReuseIdentifier: StatisticsCell.reuseIdentifier)
-            return cv
-        }()
+        let layout = UICollectionViewFlowLayout()
+        layout.minimumLineSpacing = 16
+        layout.itemSize = CGSize(width: view.bounds.width - 32, height: 90)
+        
+        let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        cv.translatesAutoresizingMaskIntoConstraints = false
+        cv.dataSource = self
+        cv.backgroundColor = .systemBackground
+        cv.register(StatisticsCell.self, forCellWithReuseIdentifier: StatisticsCell.reuseIdentifier)
+        return cv
+    }()
     
     let imageView = UIImageView()
     
@@ -65,7 +65,7 @@ class StatisticViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-       
+        
         view.backgroundColor = color.viewBackgroundColor
         setupMockImageAndLabelOnTrackerVC()
         setupNavBarLabel()
@@ -112,15 +112,15 @@ class StatisticViewController: UIViewController {
         ])
     }
     
-     func setupNavBarLabel() {
-     view.addSubview(labelTracker)
-     
-     NSLayoutConstraint.activate([
-     labelTracker.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
-     labelTracker.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-     labelTracker.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)])
-     }
-     
+    func setupNavBarLabel() {
+        view.addSubview(labelTracker)
+        
+        NSLayoutConstraint.activate([
+            labelTracker.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            labelTracker.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            labelTracker.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)])
+    }
+    
 }
 
 //MARK: - UICollectionViewDataSource
