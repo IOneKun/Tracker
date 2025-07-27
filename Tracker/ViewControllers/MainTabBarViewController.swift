@@ -32,7 +32,6 @@ final class MainTabBarViewController: UITabBarController {
             tabBar.standardAppearance = tabBarAppearance
             tabBar.scrollEdgeAppearance = tabBarAppearance
         }
-
     }
 }
 
