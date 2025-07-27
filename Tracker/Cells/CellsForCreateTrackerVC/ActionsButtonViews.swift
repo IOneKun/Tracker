@@ -17,7 +17,7 @@ final class ActionButtonsView: UIView {
     let createButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Создать", for: .normal)
-        button.setTitleColor(.white, for: .normal)
+        button.setTitleColor(.whiteDay, for: .normal)
         button.backgroundColor = .gray
         button.layer.cornerRadius = 16
         return button

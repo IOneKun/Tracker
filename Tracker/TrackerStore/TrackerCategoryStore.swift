@@ -50,6 +50,19 @@ final class TrackerCategoryStore: NSObject {
         newTrackerCategory.name = name
         try context.save()
     }
+    func fetchCategory(_ name: String) -> TrackerCategoryCoreData? {
+            let fetchRequest: NSFetchRequest<TrackerCategoryCoreData> = TrackerCategoryCoreData.fetchRequest()
+            fetchRequest.predicate = NSPredicate(format: "name == %@", name)
+            fetchRequest.fetchLimit = 1
+            
+            do {
+                let results = try context.fetch(fetchRequest)
+                return results.first
+            } catch {
+                print("Ошибка при поиске категории \(name): \(error)")
+                return nil
+            }
+        }
 }
 
 extension TrackerCategoryStore: NSFetchedResultsControllerDelegate {
