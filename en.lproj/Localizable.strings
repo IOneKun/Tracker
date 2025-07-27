@@ -1,0 +1,8 @@
+tracker_title = "Trackers";
+filters_button = "Filters";
+tab_tracker = "Trackers";
+tab_statistic = "Statistic";
+day_singular = "day";
+day_few = "days";
+day_many = "days";
+

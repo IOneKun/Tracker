@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD
   "originHash" : "b4cc6d4abe71a481189f717b580209ca263481a333535d108780cb98a489e66b",
+=======
+  "originHash" : "9c3e0a40273fa88fd99c2729e403f9a2b03e3048b7e4e0e96432c184c2c4455d",
+>>>>>>> b016d0757699b9d0abc88db38b7e6ccb520a3e79
   "pins" : [
     {
       "identity" : "appmetrica-sdk-ios",

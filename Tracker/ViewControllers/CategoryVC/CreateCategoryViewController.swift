@@ -16,9 +16,9 @@ final class CreateCategoryViewController: UIViewController {
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Готово", for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
-        button.setTitleColor(.white, for: .normal)
+        button.setTitleColor(.whiteDay, for: .normal)
         button.isEnabled = false
-        button.backgroundColor = .gray
+        button.backgroundColor = .grayDay
         button.layer.cornerRadius = 16
         return button
     }()
@@ -27,7 +27,7 @@ final class CreateCategoryViewController: UIViewController {
         let textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.placeholder = "Введите название категории"
-        textField.backgroundColor = .systemGray6
+        textField.backgroundColor = .grayDay
         textField.layer.cornerRadius = 10
         textField.font = .systemFont(ofSize: 17)
         textField.setLeftPaddingPoints(12)
@@ -39,7 +39,7 @@ final class CreateCategoryViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Новая категория"
-        view.backgroundColor = .white
+        view.backgroundColor = .whiteDay
         doneButton.addTarget(self, action: #selector(doneCategoryButtonTapped), for: .touchUpInside)
         setupLayout()
         textField.addTarget(self, action: #selector(textFieldChanged), for: .editingChanged)
@@ -80,7 +80,7 @@ final class CreateCategoryViewController: UIViewController {
     private func updateDoneButtonState() {
         let hasText = !(textField.text?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
         doneButton.isEnabled = hasText
-        doneButton.backgroundColor = hasText ? .blackDay : .gray
+        doneButton.backgroundColor = hasText ? .blackDay : .grayDay
     }
 }
 
